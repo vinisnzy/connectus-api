@@ -35,7 +35,7 @@ public class ActivityLog {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String action;
 
     @Column(name = "entity_type", length = 50)

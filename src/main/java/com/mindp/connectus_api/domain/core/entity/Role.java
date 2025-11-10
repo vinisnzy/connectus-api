@@ -10,7 +10,6 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 @Setter
 @Getter
