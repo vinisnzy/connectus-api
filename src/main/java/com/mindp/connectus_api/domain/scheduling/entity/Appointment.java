@@ -3,6 +3,7 @@ package com.mindp.connectus_api.domain.scheduling.entity;
 import com.mindp.connectus_api.domain.core.entity.Company;
 import com.mindp.connectus_api.domain.core.entity.User;
 import com.mindp.connectus_api.domain.crm.entity.Contact;
+import com.mindp.connectus_api.domain.scheduling.entity.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,12 +30,12 @@ public class Appointment {
     private Company company;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contact_id")
-    private Contact contact;
+    @JoinColumn(name = "service_id", nullable = false)
+    private Service service;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id")
-    private Service service;
+    @JoinColumn(name = "contact_id", nullable = false)
+    private Contact contact;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_user_id")
@@ -53,11 +54,8 @@ public class Appointment {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
-    @Column(name = "confirmation_sent_at")
-    private ZonedDateTime confirmationSentAt;
-
-    @Column(name = "confirmed_at")
-    private ZonedDateTime confirmedAt;
+    @Column(name = "reminder_sent")
+    private Boolean reminderSent = false;
 
     @Column(name = "reminder_sent_at")
     private ZonedDateTime reminderSentAt;

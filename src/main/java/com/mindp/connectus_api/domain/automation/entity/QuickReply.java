@@ -1,7 +1,6 @@
 package com.mindp.connectus_api.domain.automation.entity;
 
 import com.mindp.connectus_api.domain.core.entity.Company;
-import com.mindp.connectus_api.domain.core.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,27 +28,20 @@ public class QuickReply {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by_id")
-    private User createdBy;
-
-    @Column(nullable = false, length = 100)
-    private String title;
+    @Column(nullable = false, length = 50)
+    private String shortcut;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    private String message;
 
     @Column(length = 50)
     private String category;
 
-    @Column(length = 20)
-    private String shortcut;
+    @Column(name = "media_url", length = 500)
+    private String mediaUrl;
 
-    @Column(name = "usage_count")
-    private Integer usageCount = 0;
-
-    @Column(name = "last_used_at")
-    private ZonedDateTime lastUsedAt;
+    @Column(name = "media_type", length = 20)
+    private String mediaType; // image, video, document
 
     @Column(name = "is_active")
     private Boolean isActive = true;

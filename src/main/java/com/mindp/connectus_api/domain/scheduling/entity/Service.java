@@ -36,18 +36,21 @@ public class Service {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(length = 50)
-    private String category;
-
     @Column(name = "duration_minutes", nullable = false)
-    private Integer durationMinutes;
+    private Integer durationMinutes = 60;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "max_daily_appointments")
+    private Integer maxDailyAppointments;
+
+    @Column(name = "buffer_time_minutes")
+    private Integer bufferTimeMinutes = 0;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private Map<String, Object> settings;
+    private Map<String, Object> availability;
 
     @Column(name = "is_active")
     private Boolean isActive = true;

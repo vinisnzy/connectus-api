@@ -30,7 +30,7 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String title;
 
     @Column(columnDefinition = "TEXT")
@@ -42,7 +42,7 @@ public class Notification {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "related_data", columnDefinition = "jsonb")
-    private Map<String, Object> relatedData;
+    private Map<String, Object> relatedData; // contexto adicional
 
     @Column(name = "is_read")
     private Boolean isRead = false;

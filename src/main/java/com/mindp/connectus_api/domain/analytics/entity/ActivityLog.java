@@ -24,8 +24,8 @@ import java.util.UUID;
 public class ActivityLog {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
@@ -35,18 +35,27 @@ public class ActivityLog {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String action;
 
-    @Column(name = "entity_type", length = 50)
-    private String entityType;
+    @Column(name = "entity_type", nullable = false, length = 50)
+    private String entityType; // ticket, contact, user, whatsapp_connection
 
     @Column(name = "entity_id")
     private UUID entityId;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private Map<String, Object> details;
+    private Map<String, Object> metadata; // Dados da ação
+
+    // Dados de audit trail (antes/depois)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "old_values", columnDefinition = "jsonb")
+    private Map<String, Object> oldValues;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "new_values", columnDefinition = "jsonb")
+    private Map<String, Object> newValues;
 
     @Column(name = "ip_address", columnDefinition = "inet")
     private InetAddress ipAddress;

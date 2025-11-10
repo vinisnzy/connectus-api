@@ -14,9 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "contacts", schema = "crm", uniqueConstraints = {
-        @UniqueConstraint(name = "unique_phone_per_company", columnNames = {"company_id", "phone"})
-})
+@Table(name = "contacts", schema = "crm")
 @Setter
 @Getter
 @NoArgsConstructor
@@ -31,34 +29,40 @@ public class Contact {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @Column(length = 100)
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String phone;
 
-    @Column(length = 255)
+    @Column(length = 100)
     private String email;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private Map<String, Object> profile;
+    @Column(name = "external_id", length = 100)
+    private String externalId;
 
-    @Column(columnDefinition = "TEXT")
-    private String notes;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "custom_fields", columnDefinition = "jsonb")
+    private Map<String, Object> customFields;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> metrics;
 
+    @Column(columnDefinition = "TEXT[]")
+    private String[] tags;
+
+    @Column(columnDefinition = "UUID[]")
+    private UUID[] groups;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
     @Column(name = "is_blocked")
     private Boolean isBlocked = false;
 
-    @Column(name = "blocked_reason", columnDefinition = "TEXT")
-    private String blockedReason;
-
-    @Column(name = "blocked_at")
-    private ZonedDateTime blockedAt;
+    @Column(name = "last_interaction_at")
+    private ZonedDateTime lastInteractionAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;

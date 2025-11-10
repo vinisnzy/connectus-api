@@ -4,6 +4,8 @@ import com.mindp.connectus_api.domain.automation.entity.WhatsAppConnection;
 import com.mindp.connectus_api.domain.core.entity.Company;
 import com.mindp.connectus_api.domain.core.entity.User;
 import com.mindp.connectus_api.domain.crm.entity.Contact;
+import com.mindp.connectus_api.domain.messaging.entity.enums.ResolutionType;
+import com.mindp.connectus_api.domain.messaging.entity.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +34,9 @@ public class Ticket {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
+    @Column(name = "ticket_number", nullable = false)
+    private Integer ticketNumber;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id", nullable = false)
     private Contact contact;
@@ -44,9 +49,6 @@ public class Ticket {
     @JoinColumn(name = "whatsapp_connection_id")
     private WhatsAppConnection whatsappConnection;
 
-    @Column(length = 255)
-    private String subject;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "messaging.ticket_status")
     private TicketStatus status = TicketStatus.OPEN;
@@ -55,26 +57,33 @@ public class Ticket {
     private Integer priority = 0;
 
     @Column(length = 50)
+    private String channel = "whatsapp";
+
+    @Column(length = 50)
     private String category;
 
-    @Column(columnDefinition = "TEXT[]")
-    private String[] tags;
+    @Column(name = "pending_until")
+    private ZonedDateTime pendingUntil;
 
-    @Column(name = "resolution_type", length = 50)
-    private String resolutionType;
+    @Column(name = "sla_deadline")
+    private ZonedDateTime slaDeadline;
+
+    @Column(name = "first_response_at")
+    private ZonedDateTime firstResponseAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "resolution_type", columnDefinition = "messaging.resolution_type")
+    private ResolutionType resolutionType;
 
     @Column(name = "resolution_notes", columnDefinition = "TEXT")
     private String resolutionNotes;
 
-    @Column(name = "auto_close_message", columnDefinition = "TEXT")
-    private String autoCloseMessage;
+    @Column(columnDefinition = "TEXT[]")
+    private String[] tags;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private Map<String, Object> metrics;
-
-    @Column(name = "is_reopened")
-    private Boolean isReopened = false;
+    @Column(name = "custom_fields", columnDefinition = "jsonb")
+    private Map<String, Object> customFields;
 
     @Column(name = "is_archived")
     private Boolean isArchived = false;
@@ -90,9 +99,6 @@ public class Ticket {
 
     @Column(name = "closed_at")
     private ZonedDateTime closedAt;
-
-    @Column(name = "sla_deadline")
-    private ZonedDateTime slaDeadline;
 
     @PrePersist
     protected void onCreate() {

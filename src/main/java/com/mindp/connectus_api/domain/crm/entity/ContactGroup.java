@@ -1,6 +1,6 @@
-package com.mindp.connectus_api.domain.core.entity;
+package com.mindp.connectus_api.domain.crm.entity;
 
-import com.mindp.connectus_api.domain.core.entity.enums.UserStatus;
+import com.mindp.connectus_api.domain.core.entity.Company;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,12 +14,14 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users", schema = "core")
+@Table(name = "contact_groups", schema = "crm", uniqueConstraints = {
+    @UniqueConstraint(name = "unique_group_per_company", columnNames = {"company_id", "name"})
+})
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class ContactGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,41 +31,15 @@ public class User {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
-
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false, length = 100, unique = true)
-    private String email;
-
-    @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
-
-    @Column(length = 20)
-    private String phone;
-
-    @Column(length = 255)
-    private String avatar;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "core.user_status")
-    private UserStatus status = UserStatus.OFFLINE;
-
-    @Column(name = "is_active")
-    private Boolean isActive = true;
-
-    @Column(name = "is_master")
-    private Boolean isMaster = false;
-
-    @Column(name = "last_seen_at")
-    private ZonedDateTime lastSeenAt;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private Map<String, Object> metrics;
+    private Map<String, Object> conditions;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;

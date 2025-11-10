@@ -1,5 +1,7 @@
 package com.mindp.connectus_api.domain.core.entity;
 
+import com.mindp.connectus_api.domain.core.entity.enums.BillingPeriod;
+import com.mindp.connectus_api.domain.core.entity.enums.SubscriptionStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,11 +35,13 @@ public class Subscription {
     @JoinColumn(name = "plan_id", nullable = false)
     private Plan plan;
 
-    @Column(nullable = false, length = 20)
-    private String status = "active";
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "core.subscription_status")
+    private SubscriptionStatus status = SubscriptionStatus.ACTIVE;
 
-    @Column(name = "billing_period", nullable = false, length = 20)
-    private String billingPeriod = "monthly";
+    @Enumerated(EnumType.STRING)
+    @Column(name = "billing_period", nullable = false, columnDefinition = "core.billing_period")
+    private BillingPeriod billingPeriod = BillingPeriod.MONTHLY;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;

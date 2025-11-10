@@ -43,9 +43,18 @@ public class Role {
     @Column(name = "created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;
 
+    @Column(name = "updated_at")
+    private ZonedDateTime updatedAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = ZonedDateTime.now();
+        updatedAt = ZonedDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = ZonedDateTime.now();
     }
 
 }
