@@ -21,7 +21,6 @@ import java.util.Map;
 })
 public class Role {
 
-    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -20,7 +20,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Company {
 
-    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -46,6 +45,9 @@ public class Company {
 
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
+
+    @OneToOne(mappedBy = "company")
+    private Subscription subscription;
 
     @PrePersist
     protected void onCreate() {
