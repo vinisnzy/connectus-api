@@ -20,5 +20,5 @@ public interface ContactRepository extends JpaRepository<Contact, UUID> {
     @Query(value = "SELECT * FROM crm.contacts WHERE :groupId = ANY(groups)", nativeQuery = true)
     Page<Contact> findByGroup(@Param("group") UUID groupId, Pageable pageable);
 
-    Page<Contact> findByIsBlocked(Pageable pageable);
+    Page<Contact> findByIsBlocked(Boolean isBlocked, Pageable pageable);
 }
