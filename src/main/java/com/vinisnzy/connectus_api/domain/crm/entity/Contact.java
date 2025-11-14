@@ -1,0 +1,83 @@
+package com.vinisnzy.connectus_api.domain.crm.entity;
+
+import com.vinisnzy.connectus_api.domain.core.entity.Company;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.UUID;
+
+@Entity
+@Table(name = "contacts", schema = "crm")
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Contact {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(length = 100)
+    private String email;
+
+    @Column(name = "external_id", length = 100)
+    private String externalId;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "custom_fields", columnDefinition = "jsonb")
+    private Map<String, Object> customFields;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> metrics;
+
+    @Column(columnDefinition = "TEXT[]")
+    private String[] tags;
+
+    @Column(columnDefinition = "UUID[]")
+    private UUID[] groups;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(name = "is_blocked")
+    private Boolean isBlocked = false;
+
+    @Column(name = "last_interaction_at")
+    private ZonedDateTime lastInteractionAt;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private ZonedDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private ZonedDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = ZonedDateTime.now();
+        updatedAt = ZonedDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = ZonedDateTime.now();
+    }
+}

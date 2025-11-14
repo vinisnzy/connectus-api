@@ -1,0 +1,7 @@
+package com.vinisnzy.connectus_api.domain.core.entity.enums;
+
+public enum BillingPeriod {
+    MONTHLY,
+    YEARLY,
+    CUSTOM
+}
