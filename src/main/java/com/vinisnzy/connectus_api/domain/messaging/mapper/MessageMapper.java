@@ -33,7 +33,7 @@ public interface MessageMapper {
     @Mapping(target = "messageType", source = "messageType")
     @Mapping(target = "senderType", source = "senderType")
     @Mapping(target = "senderId", source = "sentByUser.id")
-    @Mapping(target = "isFromMe", expression = "java(message.getDirection() == com.mindp.connectus_api.domain.messaging.entity.enums.MessageDirection.OUTBOUND)")
+    @Mapping(target = "isFromMe", expression = "java(message.getDirection() == com.vinisnzy.connectus_api.domain.messaging.entity.enums.MessageDirection.OUTBOUND)")
     MessageResponse toResponse(Message message);
 
     default Ticket mapTicket(java.util.UUID ticketId) {

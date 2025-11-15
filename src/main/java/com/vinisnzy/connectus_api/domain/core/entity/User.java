@@ -2,10 +2,7 @@ package com.vinisnzy.connectus_api.domain.core.entity;
 
 import com.vinisnzy.connectus_api.domain.core.entity.enums.UserStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -62,7 +59,7 @@ public class User {
     private ZonedDateTime lastSeenAt;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", insertable = false)
     private Map<String, Object> metrics;
 
     @Column(name = "created_at", nullable = false, updatable = false)

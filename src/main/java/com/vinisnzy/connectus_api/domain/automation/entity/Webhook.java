@@ -43,7 +43,7 @@ public class Webhook {
     private Map<String, Object> headers;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "retry_policy", columnDefinition = "jsonb")
+    @Column(name = "retry_policy", columnDefinition = "jsonb", insertable = false)
     private Map<String, Object> retryPolicy;
 
     @Column(name = "is_active")

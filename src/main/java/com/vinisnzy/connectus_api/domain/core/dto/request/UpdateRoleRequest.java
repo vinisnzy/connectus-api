@@ -7,6 +7,6 @@ import java.util.Map;
 @Builder
 public record UpdateRoleRequest(
         String name,
-        Map<String, Object> permissions
+        Map<String, Map<String, Boolean>> permissions
 ) {
 }

@@ -90,11 +90,11 @@ public class WhatsAppConnection {
     private String webhookUrl;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", insertable = false)
     private Map<String, Object> settings;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", insertable = false)
     private Map<String, Object> stats;
 
     @Column(name = "last_error", columnDefinition = "TEXT")

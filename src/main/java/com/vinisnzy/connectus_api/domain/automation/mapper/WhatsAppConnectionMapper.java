@@ -15,7 +15,7 @@ public interface WhatsAppConnectionMapper {
     @Mapping(target = "connectedByUser", ignore = true)
     @Mapping(target = "phoneNumber", ignore = true)
     @Mapping(target = "phoneNumberFormatted", ignore = true)
-    @Mapping(target = "displayName", source = "connectionName")
+    @Mapping(target = "displayName", source = "request.connectionName")
     @Mapping(target = "status", constant = "PENDING")
     @Mapping(target = "qrCode", ignore = true)
     @Mapping(target = "qrCodeExpiresAt", ignore = true)

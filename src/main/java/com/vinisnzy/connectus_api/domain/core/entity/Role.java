@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -37,8 +36,8 @@ public class Role {
     private Boolean isSystemRole = false;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(nullable = false, columnDefinition = "jsonb")
-    private Map<String, Object> permissions;
+    @Column(nullable = false, columnDefinition = "jsonb", insertable = false)
+    private Map<String, Map<String, Boolean>> permissions;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;

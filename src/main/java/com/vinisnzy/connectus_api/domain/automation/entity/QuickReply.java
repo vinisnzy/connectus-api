@@ -31,6 +31,9 @@ public class QuickReply {
     @Column(nullable = false, length = 50)
     private String shortcut;
 
+    @Column(nullable = false, length = 50)
+    private String title;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
 

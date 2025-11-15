@@ -46,7 +46,7 @@ public class Contact {
     private Map<String, Object> customFields;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", insertable = false)
     private Map<String, Object> metrics;
 
     @Column(columnDefinition = "TEXT[]")

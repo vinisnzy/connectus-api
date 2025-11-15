@@ -11,6 +11,6 @@ import java.util.UUID;
 public record CreateRoleRequest(
         @NotNull UUID companyId,
         @NotBlank String name,
-        @NotNull Map<String, Object> permissions
+        @NotNull Map<String, Map<String, Boolean>> permissions
 ) {
 }

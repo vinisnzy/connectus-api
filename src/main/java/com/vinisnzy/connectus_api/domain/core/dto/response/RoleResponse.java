@@ -8,7 +8,7 @@ import java.util.Map;
 public record RoleResponse(
         Integer id,
         String name,
-        Map<String, Object> permissions,
+        Map<String, Map<String, Boolean>> permissions,
         Boolean isSystemRole
 ) {
 }

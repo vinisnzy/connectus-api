@@ -31,7 +31,7 @@ public class Company {
     private String cnpj;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(nullable = false, columnDefinition = "jsonb")
+    @Column(nullable = false, columnDefinition = "jsonb", insertable = false)
     private Map<String, Object> settings;
 
     @Column(name = "is_active")

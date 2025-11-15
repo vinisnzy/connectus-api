@@ -73,7 +73,7 @@ public class Subscription {
     private Map<String, Object> customFeatures;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "usage_data", columnDefinition = "jsonb")
+    @Column(name = "usage_data", columnDefinition = "jsonb", insertable = false)
     private Map<String, Object> usageData;
 
     @Column(name = "created_at", nullable = false, updatable = false)
