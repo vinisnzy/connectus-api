@@ -21,5 +21,6 @@ public record ContactResponse(
         Long ticketsCount,
         Long appointmentsCount,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt) {
+        LocalDateTime updatedAt
+) {
 }

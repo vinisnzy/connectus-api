@@ -10,9 +10,10 @@ public record CreateContactRequest(
         @NotBlank(message = "Telefone é obrigatório")
         String phone,
 
+        @NotBlank(message = "Nome é obrigatório")
         String name,
 
-        @Email(message = "Email deve ser válido")
+        @Email(message = "Email inválido")
         String email,
 
         List<String> tags,

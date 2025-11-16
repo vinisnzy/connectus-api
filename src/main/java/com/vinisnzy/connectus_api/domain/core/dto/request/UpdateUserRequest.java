@@ -6,7 +6,10 @@ import lombok.Builder;
 @Builder
 public record UpdateUserRequest(
         String name,
-        @Email String email,
+
+        @Email(message = "Email inválido")
+        String email,
+
         String phone,
         String avatar,
         Integer roleId,

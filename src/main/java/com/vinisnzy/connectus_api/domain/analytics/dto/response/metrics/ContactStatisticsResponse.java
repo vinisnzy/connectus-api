@@ -1,4 +1,4 @@
-package com.vinisnzy.connectus_api.domain.crm.dto.response;
+package com.vinisnzy.connectus_api.domain.analytics.dto.response.metrics;
 
 import lombok.Builder;
 
@@ -10,5 +10,6 @@ public record ContactStatisticsResponse(
         Long resolvedTickets,
         Long totalAppointments,
         Long completedAppointments,
-        BigDecimal totalSpent) {
+        BigDecimal totalSpent
+) {
 }

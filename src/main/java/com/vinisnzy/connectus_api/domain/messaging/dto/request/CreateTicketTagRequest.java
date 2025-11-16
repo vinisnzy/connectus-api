@@ -8,9 +8,15 @@ import java.util.UUID;
 
 @Builder
 public record CreateTicketTagRequest(
-        @NotNull UUID companyId,
-        @NotBlank String name,
+        @NotNull(message = "ID da empresa é obrigatório")
+        UUID companyId,
+
+        @NotBlank(message = "Nome da tag é obrigatório")
+        String name,
+
+        @NotBlank(message = "Cor da tag é obrigatória")
         String color,
+
         String description
 ) {
 }

@@ -8,5 +8,6 @@ import java.util.UUID;
 public record CreateAppointmentResponse(
         UUID id,
         String status,
-        Boolean confirmationSent) {
+        Boolean confirmationSent
+) {
 }

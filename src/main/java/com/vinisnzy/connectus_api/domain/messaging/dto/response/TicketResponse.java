@@ -22,5 +22,6 @@ public record TicketResponse(
         LocalDateTime resolvedAt,
         Map<String, Object> metadata,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt) {
+        LocalDateTime updatedAt
+) {
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 public record UpdateContactRequest(
         String name,
 
-        @Email(message = "Email deve ser válido")
+        @Email(message = "Email inválido")
         String email,
 
         List<String> tags,

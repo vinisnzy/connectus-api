@@ -9,8 +9,13 @@ import java.util.UUID;
 
 @Builder
 public record CreateRoleRequest(
-        @NotNull UUID companyId,
-        @NotBlank String name,
-        @NotNull Map<String, Map<String, Boolean>> permissions
+        @NotNull(message = "O id da empresa é obrigatório")
+        UUID companyId,
+
+        @NotBlank(message = "O nome do cargo é obrigatório")
+        String name,
+
+        @NotNull(message = "As permissões do cargo são obrigatórias")
+        Map<String, Map<String, Boolean>> permissions
 ) {
 }

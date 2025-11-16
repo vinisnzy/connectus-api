@@ -12,7 +12,7 @@ public record QuickReplyResponse(
         String title,
         String messageContent,
         String mediaUrl,
-        Boolean isActive,
         Integer usageCount,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt
+) {
 }

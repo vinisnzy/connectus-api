@@ -1,4 +1,4 @@
-package com.vinisnzy.connectus_api.domain.messaging.dto.response;
+package com.vinisnzy.connectus_api.domain.analytics.dto.response.metrics;
 
 import lombok.Builder;
 
@@ -10,5 +10,6 @@ public record TicketMetricsResponse(
         Long inProgress,
         Long resolved,
         Double avgFirstResponseMinutes,
-        Double avgResolutionMinutes) {
+        Double avgResolutionMinutes
+) {
 }

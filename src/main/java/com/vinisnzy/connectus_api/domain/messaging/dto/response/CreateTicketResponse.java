@@ -9,5 +9,6 @@ import java.util.UUID;
 public record CreateTicketResponse(
         UUID id,
         String status,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt
+) {
 }

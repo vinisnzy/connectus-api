@@ -19,5 +19,6 @@ public record AppointmentResponse(
         String notes,
         String cancellationReason,
         LocalDateTime reminderSentAt,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt
+) {
 }

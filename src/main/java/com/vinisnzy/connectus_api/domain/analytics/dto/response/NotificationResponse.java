@@ -8,6 +8,7 @@ import java.util.UUID;
 @Builder
 public record NotificationResponse (
         UUID id,
+        UUID userId,
         NotificationType type,
         String title,
         String message

@@ -2,7 +2,9 @@ package com.vinisnzy.connectus_api.domain.automation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
+@Builder
 public record CreateQuickReplyRequest(
         @NotBlank(message = "Atalho é obrigatório")
         @Size(max = 50, message = "Atalho deve ter no máximo 50 caracteres")

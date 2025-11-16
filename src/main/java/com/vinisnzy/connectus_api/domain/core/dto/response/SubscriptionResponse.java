@@ -4,7 +4,6 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 @Builder
@@ -18,8 +17,6 @@ public record SubscriptionResponse(
         BigDecimal finalPrice,
         ZonedDateTime startedAt,
         ZonedDateTime expiresAt,
-        ZonedDateTime trialEndsAt,
-        Map<String, Object> customLimits,
-        Map<String, Object> customFeatures
+        ZonedDateTime trialEndsAt
 ) {
 }

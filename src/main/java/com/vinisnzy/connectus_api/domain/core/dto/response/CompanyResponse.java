@@ -7,5 +7,7 @@ import java.util.UUID;
 @Builder
 public record CompanyResponse(
         UUID id,
-        String name) {
+        String name,
+        String cnpj
+) {
 }

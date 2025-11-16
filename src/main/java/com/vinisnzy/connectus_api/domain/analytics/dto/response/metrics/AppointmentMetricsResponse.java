@@ -9,5 +9,6 @@ public record AppointmentMetricsResponse(
         Long confirmed,
         Long completed,
         Long canceled,
-        Long noShow) {
+        Long noShow
+) {
 }

@@ -9,13 +9,25 @@ import java.util.Map;
 
 @Builder
 public record CreatePlanRequest(
-        @NotBlank String name,
-        @NotBlank String displayName,
+        @NotBlank(message = "Nome é obrigatório")
+        String name,
+
+        @NotBlank(message = "Nome de exibição é obrigatório")
+        String displayName,
+
         String description,
-        @NotNull BigDecimal monthlyPrice,
+
+        @NotNull(message = "Preço mensal é obrigatório")
+        BigDecimal monthlyPrice,
+
         BigDecimal yearlyPrice,
-        @NotNull Map<String, Object> limits,
-        @NotNull Map<String, Object> features,
+
+        @NotNull(message = "Os limites são obrigatórios")
+        Map<String, Object> limits,
+
+        @NotNull(message = "As funcionalidades são obrigatórias")
+        Map<String, Object> features,
+
         Integer sortOrder,
         Boolean isTrialEligible,
         Integer trialDays

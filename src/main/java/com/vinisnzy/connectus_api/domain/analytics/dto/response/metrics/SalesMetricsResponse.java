@@ -9,5 +9,6 @@ public record SalesMetricsResponse(
         Long total,
         Long lost,
         Double conversionRate,
-        BigDecimal totalRevenue) {
+        BigDecimal totalRevenue
+) {
 }

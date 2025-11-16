@@ -13,7 +13,6 @@ public record UpdatePlanRequest(
         BigDecimal yearlyPrice,
         Map<String, Object> limits,
         Map<String, Object> features,
-        Integer sortOrder,
         Boolean isActive,
         Boolean isTrialEligible,
         Integer trialDays

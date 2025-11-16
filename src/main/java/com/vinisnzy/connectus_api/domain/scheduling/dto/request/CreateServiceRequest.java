@@ -5,18 +5,24 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.UUID;
 
 @Builder
 public record CreateServiceRequest(
-        @NotNull UUID companyId,
-        @NotBlank String name,
+        @NotNull(message = "ID da empresa é obrigatório")
+        UUID companyId,
+
+        @NotBlank(message = "Nome do serviço é obrigatório")
+        String name,
+
         String description,
-        @NotNull Integer durationMinutes,
+
+        @NotNull(message = "Duração do serviço em minutos é obrigatório")
+        Integer durationMinutes,
+
+        @NotNull(message = "Preço do serviço é obrigatório")
         BigDecimal price,
-        Integer maxDailyAppointments,
-        Integer bufferTimeMinutes,
-        Map<String, Object> availability
+
+        Integer bufferTimeMinutes
 ) {
 }

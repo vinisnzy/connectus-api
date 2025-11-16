@@ -9,11 +9,22 @@ import java.util.UUID;
 
 @Builder
 public record CreateUserRequest(
-        @NotNull UUID companyId,
-        @NotNull Integer roleId,
-        @NotBlank String name,
-        @NotBlank @Email String email,
-        @NotBlank String password,
+        @NotNull(message = "Id da empresa é obrigatório")
+        UUID companyId,
+
+        @NotNull(message = "Id do cargo é obrigatório")
+        Integer roleId,
+
+        @NotBlank(message = "Nome é obrigatório")
+        String name,
+
+        @NotBlank(message = "Email é obrigatório")
+        @Email(message = "Email inválido")
+        String email,
+
+        @NotBlank(message = "Senha é obrigatória")
+        String password,
+
         String phone,
         String avatar
 ) {

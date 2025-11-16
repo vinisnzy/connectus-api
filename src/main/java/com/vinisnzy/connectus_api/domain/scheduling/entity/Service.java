@@ -6,12 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -42,15 +39,8 @@ public class Service {
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "max_daily_appointments")
-    private Integer maxDailyAppointments;
-
     @Column(name = "buffer_time_minutes")
     private Integer bufferTimeMinutes = 0;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private Map<String, Object> availability;
 
     @Column(name = "is_active")
     private Boolean isActive = true;

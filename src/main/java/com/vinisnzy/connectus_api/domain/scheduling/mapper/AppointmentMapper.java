@@ -1,6 +1,5 @@
 package com.vinisnzy.connectus_api.domain.scheduling.mapper;
 
-import com.vinisnzy.connectus_api.domain.scheduling.dto.request.CancelAppointmentRequest;
 import com.vinisnzy.connectus_api.domain.scheduling.dto.request.CreateAppointmentRequest;
 import com.vinisnzy.connectus_api.domain.scheduling.dto.request.RescheduleAppointmentRequest;
 import com.vinisnzy.connectus_api.domain.scheduling.dto.response.AppointmentResponse;
@@ -46,24 +45,6 @@ public interface AppointmentMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     void reschedule(RescheduleAppointmentRequest request, @MappingTarget Appointment appointment);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "company", ignore = true)
-    @Mapping(target = "service", ignore = true)
-    @Mapping(target = "contact", ignore = true)
-    @Mapping(target = "assignedUser", ignore = true)
-    @Mapping(target = "startTime", ignore = true)
-    @Mapping(target = "endTime", ignore = true)
-    @Mapping(target = "status", constant = "CANCELED")
-    @Mapping(target = "notes", ignore = true)
-    @Mapping(target = "reminderSent", ignore = true)
-    @Mapping(target = "reminderSentAt", ignore = true)
-    @Mapping(target = "canceledAt", expression = "java(java.time.ZonedDateTime.now())")
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "cancellationReason", source = "reason")
-    void cancel(CancelAppointmentRequest request, @MappingTarget Appointment appointment);
 
     @Mapping(target = "status", source = "status")
     AppointmentResponse toResponse(Appointment appointment);

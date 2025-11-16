@@ -65,14 +65,6 @@ public class Subscription {
     private ZonedDateTime canceledAt;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "custom_limits", columnDefinition = "jsonb")
-    private Map<String, Object> customLimits;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "custom_features", columnDefinition = "jsonb")
-    private Map<String, Object> customFeatures;
-
-    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "usage_data", columnDefinition = "jsonb", insertable = false)
     private Map<String, Object> usageData;
 

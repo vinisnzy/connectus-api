@@ -13,5 +13,6 @@ public record UserPerformanceResponse(
         Long salesCount,
         Double avgFirstResponseMinutes,
         Double avgResolutionMinutes,
-        Integer activeDays) {
+        Integer activeDays
+) {
 }

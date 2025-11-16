@@ -9,5 +9,6 @@ import java.util.UUID;
 public record SendMessageResponse(
         UUID id,
         LocalDateTime sentAt,
-        String status) {
+        String status
+) {
 }

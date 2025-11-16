@@ -17,5 +17,6 @@ public record MessageResponse(
         LocalDateTime sentAt,
         LocalDateTime deliveredAt,
         LocalDateTime readAt,
-        Boolean isFromMe) {
+        Boolean isFromMe
+) {
 }

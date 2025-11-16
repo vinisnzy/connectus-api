@@ -12,5 +12,6 @@ public record WhatsAppConnectionResponse(
         String phoneNumber,
         String status,
         LocalDateTime lastConnectedAt,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt
+) {
 }

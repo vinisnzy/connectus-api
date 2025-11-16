@@ -18,8 +18,6 @@ public record UpdateQuickReplyRequest(
 
         String messageContent,
 
-        String mediaUrl,
-
-        Boolean isActive
+        String mediaUrl
 ) {
 }

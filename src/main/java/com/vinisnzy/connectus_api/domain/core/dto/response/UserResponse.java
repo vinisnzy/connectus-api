@@ -1,5 +1,6 @@
 package com.vinisnzy.connectus_api.domain.core.dto.response;
 
+import com.vinisnzy.connectus_api.domain.core.entity.enums.UserStatus;
 import lombok.Builder;
 
 import java.time.ZonedDateTime;
@@ -12,7 +13,7 @@ public record UserResponse(
         String email,
         String phone,
         String avatar,
-        String status,
+        UserStatus status,
         Boolean isActive,
         ZonedDateTime lastSeenAt,
         RoleResponse role,

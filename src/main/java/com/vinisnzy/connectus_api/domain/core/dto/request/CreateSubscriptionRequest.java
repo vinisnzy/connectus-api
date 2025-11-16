@@ -9,9 +9,15 @@ import java.util.UUID;
 
 @Builder
 public record CreateSubscriptionRequest(
-        @NotNull UUID companyId,
-        @NotNull UUID planId,
-        @NotNull String billingPeriod,
+        @NotNull(message = "O id da empresa é obrigatório")
+        UUID companyId,
+
+        @NotNull(message = "O id do plano é obrigatório")
+        UUID planId,
+
+        @NotNull(message = "O período de cobrança é obrigatório")
+        String billingPeriod,
+
         BigDecimal discountPercentage,
         Map<String, Object> customLimits,
         Map<String, Object> customFeatures

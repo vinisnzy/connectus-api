@@ -10,5 +10,6 @@ public record WhatsAppQRCodeResponse(
         UUID id,
         String qrCode,
         String status,
-        LocalDateTime expiresAt) {
+        LocalDateTime expiresAt
+) {
 }

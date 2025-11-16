@@ -48,9 +48,6 @@ public class Plan {
     @Column(nullable = false, columnDefinition = "jsonb")
     private Map<String, Object> features;
 
-    @Column(name = "sort_order")
-    private Integer sortOrder = 0;
-
     @Column(name = "is_active")
     private Boolean isActive = true;
 

@@ -1,16 +1,14 @@
-package com.vinisnzy.connectus_api.domain.automation.dto.request;
+package com.vinisnzy.connectus_api.domain.messaging.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.UUID;
 
-public record WhatsAppMessageWebhook(
-        @NotNull(message = "ID da conexão é obrigatório")
-        UUID connectionId,
-
+@Builder
+public record ReceiveMessageRequest(
         @NotBlank(message = "Número de origem é obrigatório")
         String from,
 

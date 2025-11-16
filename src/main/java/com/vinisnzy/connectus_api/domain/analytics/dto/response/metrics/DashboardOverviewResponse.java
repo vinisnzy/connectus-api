@@ -1,7 +1,5 @@
 package com.vinisnzy.connectus_api.domain.analytics.dto.response.metrics;
 
-import com.vinisnzy.connectus_api.domain.dto.PeriodResponse;
-import com.vinisnzy.connectus_api.domain.messaging.dto.response.TicketMetricsResponse;
 import lombok.Builder;
 
 import java.util.List;
