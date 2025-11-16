@@ -8,7 +8,6 @@ import java.util.Map;
 @Builder
 public record CreateCompanyRequest(
         @NotBlank String name,
-        String cnpj,
-        Map<String, Object> settings
+        String cnpj
 ) {
 }

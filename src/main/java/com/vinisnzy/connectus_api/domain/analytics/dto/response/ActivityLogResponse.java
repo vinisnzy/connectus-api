@@ -14,7 +14,5 @@ public record ActivityLogResponse(
         String action,
         String entityType,
         UUID entityId,
-        Map<String, Object> changes,
-        String ipAddress,
         LocalDateTime createdAt) {
 }

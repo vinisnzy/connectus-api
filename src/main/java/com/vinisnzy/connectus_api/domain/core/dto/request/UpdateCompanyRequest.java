@@ -8,7 +8,6 @@ import java.util.Map;
 public record UpdateCompanyRequest(
         String name,
         String cnpj,
-        Map<String, Object> settings,
-        Boolean isActive
+        Map<String, Object> settings
 ) {
 }

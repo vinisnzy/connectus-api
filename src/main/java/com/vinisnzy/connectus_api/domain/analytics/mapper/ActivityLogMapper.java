@@ -12,13 +12,11 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface ActivityLogMapper {
 
-    @Mapping(target = "changes", ignore = true)
-    @Mapping(target = "ipAddress", ignore = true)
     ActivityLogResponse toResponse(ActivityLog activityLog);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "company", source = "companyId")
-    @Mapping(target = "user", source = "userId")
+    @Mapping(target = "companyId", source = "companyId")
+    @Mapping(target = "userId", source = "userId")
     @Mapping(target = "createdAt", ignore = true)
     ActivityLog toEntity(String action, String entityType, UUID entityId, UUID companyId, UUID userId);
 

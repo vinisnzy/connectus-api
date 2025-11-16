@@ -19,9 +19,9 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
 
     Page<Service> findByNameContainingIgnoreCaseAndCompanyId(String name, UUID companyId, Pageable pageable);
 
-    @Query("SELECT s FROM Service s WHERE s.companyId = :companyId AND s.isActive = true AND s.price IS NOT NULL ORDER BY s.price ASC")
+    @Query("SELECT s FROM Service s WHERE s.company.id = :companyId AND s.isActive = true AND s.price IS NOT NULL ORDER BY s.price ASC")
     List<Service> findActiveServicesWithPriceOrderByPrice(@Param("companyId") UUID companyId);
 
-    @Query("SELECT COUNT(s) FROM Service s WHERE s.companyId = :companyId AND s.isActive = true")
+    @Query("SELECT COUNT(s) FROM Service s WHERE s.company.id = :companyId AND s.isActive = true")
     Long countActiveByCompanyId(@Param("companyId") UUID companyId);
 }
