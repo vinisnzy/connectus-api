@@ -1,8 +1,10 @@
 package com.vinisnzy.connectus_api.infra.client;
 
+import com.vinisnzy.connectus_api.domain.automation.dto.request.WhatsAppQRCodeRequest;
+import com.vinisnzy.connectus_api.domain.automation.dto.response.WhatsAppQRCodeResponse;
 import com.vinisnzy.connectus_api.domain.messaging.dto.request.SendMessageRequest;
-import com.vinisnzy.connectus_api.domain.messaging.dto.response.SendMessageResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -11,5 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface N8nClient {
 
     @PostMapping("/send-message")
-    SendMessageResponse sendMessage(@RequestBody SendMessageRequest request);
+    void sendMessage(@RequestBody SendMessageRequest request);
+
+    @GetMapping("/qr-code")
+    WhatsAppQRCodeResponse getQrCode(@RequestBody WhatsAppQRCodeRequest request);
 }
