@@ -1,0 +1,64 @@
+package com.vinisnzy.connectus_api.domain.automation.service;
+
+import com.vinisnzy.connectus_api.domain.automation.dto.request.CreateQuickReplyRequest;
+import com.vinisnzy.connectus_api.domain.automation.dto.request.UpdateQuickReplyRequest;
+import com.vinisnzy.connectus_api.domain.automation.dto.response.QuickReplyResponse;
+import com.vinisnzy.connectus_api.domain.automation.entity.QuickReply;
+import com.vinisnzy.connectus_api.domain.automation.mapper.QuickReplyMapper;
+import com.vinisnzy.connectus_api.domain.automation.repository.QuickReplyRepository;
+import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.infra.utils.SecurityUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class QuickReplyService {
+
+    private final QuickReplyRepository repository;
+    private final QuickReplyMapper mapper;
+
+    public QuickReplyResponse create(CreateQuickReplyRequest request) {
+        QuickReply quickReply = mapper.toEntity(request);
+        repository.save(quickReply);
+        return mapper.toResponse(quickReply);
+    }
+
+    public List<QuickReplyResponse> getAll(Pageable pageable) {
+        UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
+        return repository.findByCompanyId(companyId, pageable)
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
+
+    public QuickReplyResponse getById(UUID id) {
+        QuickReply quickReply = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Quick Reply não encontrado com id: " + id));
+        return mapper.toResponse(quickReply);
+    }
+
+    public List<QuickReplyResponse> getByName(String title) {
+        UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
+        return repository.findByCompanyIdAndTitleContainingIgnoreCase(companyId, title)
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
+
+    public QuickReplyResponse update(UpdateQuickReplyRequest request) {
+        QuickReply quickReply = repository.findById(request.id())
+                .orElseThrow(() -> new EntityNotFoundException("Quick Reply não encontrado com id: " + request.id()));
+        mapper.updateEntity(request, quickReply);
+        repository.save(quickReply);
+        return mapper.toResponse(quickReply);
+    }
+
+    public void delete(UUID id) {
+        repository.deleteById(id);
+    }
+}
