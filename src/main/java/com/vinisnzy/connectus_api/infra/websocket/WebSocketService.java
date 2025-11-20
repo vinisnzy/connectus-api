@@ -1,4 +1,4 @@
-package com.vinisnzy.connectus_api.domain.websocket;
+package com.vinisnzy.connectus_api.infra.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
