@@ -28,7 +28,6 @@ public record CreatePlanRequest(
         @NotNull(message = "As funcionalidades são obrigatórias")
         Map<String, Object> features,
 
-        Integer sortOrder,
         Boolean isTrialEligible,
         Integer trialDays
 ) {
