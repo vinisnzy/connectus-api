@@ -12,4 +12,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
     Subscription findByCompanyId(UUID companyId);
     Page<Subscription> findByPlanId(UUID planId, Pageable pageable);
     Page<Subscription> findByStatus(SubscriptionStatus status, Pageable pageable);
+    Boolean existsByPlanId(UUID planId);
 }
