@@ -1,5 +1,6 @@
 package com.vinisnzy.connectus_api.domain.core.dto.request;
 
+import com.vinisnzy.connectus_api.domain.core.entity.enums.BillingPeriod;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
@@ -16,8 +17,9 @@ public record CreateSubscriptionRequest(
         UUID planId,
 
         @NotNull(message = "O período de cobrança é obrigatório")
-        String billingPeriod,
+        BillingPeriod billingPeriod,
 
+        Integer trialDays,
         BigDecimal discountPercentage,
         Map<String, Object> customLimits,
         Map<String, Object> customFeatures
