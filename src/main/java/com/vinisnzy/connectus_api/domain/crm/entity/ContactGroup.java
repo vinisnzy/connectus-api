@@ -6,11 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -36,10 +33,6 @@ public class ContactGroup {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private Map<String, Object> conditions;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;

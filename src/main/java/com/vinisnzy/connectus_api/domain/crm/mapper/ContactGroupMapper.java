@@ -11,7 +11,6 @@ import org.mapstruct.*;
 public interface ContactGroupMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "company", source = "companyId")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     ContactGroup toEntity(CreateContactGroupRequest request);
