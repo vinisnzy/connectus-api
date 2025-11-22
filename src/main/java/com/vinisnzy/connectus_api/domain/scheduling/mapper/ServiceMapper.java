@@ -11,7 +11,7 @@ import org.mapstruct.*;
 public interface ServiceMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "company", source = "companyId")
+    @Mapping(target = "company", ignore = true)
     @Mapping(target = "isActive", constant = "true")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

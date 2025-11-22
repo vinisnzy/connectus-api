@@ -16,9 +16,9 @@ public interface AppointmentMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "company", ignore = true)
-    @Mapping(target = "service", source = "serviceId")
-    @Mapping(target = "contact", source = "contactId")
-    @Mapping(target = "assignedUser", source = "assignedUserId")
+    @Mapping(target = "service", ignore = true)
+    @Mapping(target = "contact", ignore = true)
+    @Mapping(target = "assignedUser", ignore = true)
     @Mapping(target = "status", constant = "SCHEDULED")
     @Mapping(target = "reminderSent", constant = "false")
     @Mapping(target = "reminderSentAt", ignore = true)

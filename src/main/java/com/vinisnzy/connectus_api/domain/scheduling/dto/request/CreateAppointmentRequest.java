@@ -3,7 +3,7 @@ package com.vinisnzy.connectus_api.domain.scheduling.dto.request;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public record CreateAppointmentRequest(
@@ -18,11 +18,11 @@ public record CreateAppointmentRequest(
 
         @NotNull(message = "Data e hora de início são obrigatórias")
         @Future(message = "Data e hora de início devem ser no futuro")
-        LocalDateTime startTime,
+        ZonedDateTime startTime,
 
         @NotNull(message = "Data e hora de término são obrigatórias")
         @Future(message = "Data e hora de término devem ser no futuro")
-        LocalDateTime endTime,
+        ZonedDateTime endTime,
 
         String notes,
 
