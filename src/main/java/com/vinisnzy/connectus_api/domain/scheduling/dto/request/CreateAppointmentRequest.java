@@ -24,8 +24,6 @@ public record CreateAppointmentRequest(
         @Future(message = "Data e hora de término devem ser no futuro")
         ZonedDateTime endTime,
 
-        String notes,
-
-        Boolean sendConfirmation
+        String notes
 ) {
 }

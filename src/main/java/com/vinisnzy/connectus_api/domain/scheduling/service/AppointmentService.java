@@ -104,6 +104,8 @@ public class AppointmentService {
         UUID contactId = request.contactId();
         UUID assignedUserId = request.assignedUserId();
 
+        validateEndTimeAfterStartTimeInAppointment(request.startTime(), request.endTime());
+
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrada com o id: " + companyId));
 
@@ -143,9 +145,7 @@ public class AppointmentService {
 
         validateAppointmentBelongsToCompany(appointment);
 
-        if (startTime != null && endTime != null && endTime.isBefore(startTime)) {
-            throw new IllegalStateException("O horário de término deve ser após o horário de início.");
-        }
+        validateEndTimeAfterStartTimeInAppointment(startTime, endTime);
 
         if (startTime != null) {
             appointment.setStartTime(startTime);
@@ -307,6 +307,12 @@ public class AppointmentService {
                 .limit(limit)
                 .map(mapper::toResponse)
                 .toList();
+    }
+
+    private void validateEndTimeAfterStartTimeInAppointment(ZonedDateTime startTime, ZonedDateTime endTime) {
+        if (startTime != null && endTime != null && endTime.isBefore(startTime)) {
+            throw new IllegalStateException("O horário de término deve ser após o horário de início.");
+        }
     }
 
     private Appointment getAppointmentOrThrow(UUID id) {

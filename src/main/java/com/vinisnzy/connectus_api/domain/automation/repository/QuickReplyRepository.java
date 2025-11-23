@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface QuickReplyRepository extends JpaRepository<QuickReply, UUID> {
-    Page<QuickReply> findByCompanyId(UUID companyId, Pageable pageable);
+    Page<QuickReply> findByCompanyIdAndIsActiveTrue(UUID companyId, Pageable pageable);
+    List<QuickReply> findByCompanyIdAndIsActiveTrue(UUID companyId);
     List<QuickReply> findByCompanyIdAndTitleContainingIgnoreCase(UUID companyId, String title);
 }

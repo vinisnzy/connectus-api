@@ -50,7 +50,8 @@ public class SubscriptionService {
 
     public SubscriptionResponse findCurrentCompanySubscription() {
         UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
-        Subscription subscription = subscriptionRepository.findByCompanyId(companyId);
+        Subscription subscription = subscriptionRepository.findByCompanyId(companyId)
+                .orElseThrow(() -> new EntityNotFoundException("Inscrição não encontrada para a empresa com o id: " + companyId));
         return mapper.toResponse(subscription);
     }
 

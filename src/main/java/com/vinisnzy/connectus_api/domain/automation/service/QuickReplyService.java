@@ -30,7 +30,15 @@ public class QuickReplyService {
 
     public List<QuickReplyResponse> getAll(Pageable pageable) {
         UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
-        return repository.findByCompanyId(companyId, pageable)
+        return repository.findByCompanyIdAndIsActiveTrue(companyId, pageable)
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
+
+    public List<QuickReplyResponse> getAll() {
+        UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
+        return repository.findByCompanyIdAndIsActiveTrue(companyId)
                 .stream()
                 .map(mapper::toResponse)
                 .toList();
