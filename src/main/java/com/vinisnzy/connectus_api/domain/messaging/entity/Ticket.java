@@ -15,7 +15,9 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -78,8 +80,14 @@ public class Ticket {
     @Column(name = "resolution_notes", columnDefinition = "TEXT")
     private String resolutionNotes;
 
-    @Column(columnDefinition = "TEXT[]")
-    private String[] tags;
+    @ManyToMany
+    @JoinTable(
+            name = "ticket_tag_associations",
+            schema = "messaging",
+            joinColumns = @JoinColumn(name = "ticket_id"),
+            inverseJoinColumns = @JoinColumn(name = "ticket_tag_id")
+    )
+    private Set<TicketTag> tags = new HashSet<>();
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "custom_fields", columnDefinition = "jsonb")
