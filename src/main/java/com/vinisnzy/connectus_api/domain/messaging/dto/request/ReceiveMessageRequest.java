@@ -10,7 +10,7 @@ import java.util.Map;
 @Builder
 public record ReceiveMessageRequest(
         @NotBlank(message = "Número de origem é obrigatório")
-        String from,
+        String receiveFromNumber,
 
         @NotBlank(message = "Tipo de mensagem é obrigatório")
         String messageType,
@@ -18,7 +18,7 @@ public record ReceiveMessageRequest(
         @NotNull(message = "Conteúdo da mensagem é obrigatório")
         Map<String, Object> content,
 
-        @NotNull(message = "Timestamp é obrigatório")
-        LocalDateTime timestamp
+        @NotNull(message = "Data e hora do envio é obrigatório")
+        LocalDateTime sentAt
 ) {
 }
