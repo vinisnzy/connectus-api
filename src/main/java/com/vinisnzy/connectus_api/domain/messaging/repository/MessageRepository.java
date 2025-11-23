@@ -23,6 +23,8 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
     List<Message> findByTicketAndIsReadFalseAndDirection(Ticket ticket, MessageDirection direction);
 
+    Long countByCompanyIdAndIsReadFalseAndDirection(UUID companyId, MessageDirection direction);
+
     @Query("SELECT m FROM Message m WHERE m.company = :company AND m.sentAt BETWEEN :startDate AND :endDate ORDER BY m.sentAt DESC")
     Page<Message> findByCompanyAndDateRange(@Param("company") Company company,
                                             @Param("startDate") ZonedDateTime startDate,
