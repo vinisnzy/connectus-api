@@ -104,4 +104,14 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     );
 
     Page<Ticket> findByIsArchivedFalseAndCompanyIdOrderByCreatedAtDesc(UUID companyId, Pageable pageable);
+
+    @Query("""
+                SELECT t
+                FROM Ticket t
+                WHERE t.contact.id = :contactId
+                  AND t.status IN ('OPEN', 'PENDING')
+                ORDER BY t.createdAt DESC
+                LIMIT 1
+            """)
+    Optional<Ticket> findFirstByContactIdAndStatusOpenOrPending(@Param("contactId") UUID contactId);
 }
