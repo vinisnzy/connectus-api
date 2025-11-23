@@ -11,7 +11,7 @@ import org.mapstruct.*;
 public interface TicketTagMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "company", source = "companyId")
+    @Mapping(target = "company", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     TicketTag toEntity(CreateTicketTagRequest request);
 

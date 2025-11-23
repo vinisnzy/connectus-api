@@ -2,15 +2,20 @@ package com.vinisnzy.connectus_api.domain.messaging.mapper;
 
 import com.vinisnzy.connectus_api.domain.messaging.dto.request.CreateTicketRequest;
 import com.vinisnzy.connectus_api.domain.messaging.dto.request.UpdateTicketStatusRequest;
+import com.vinisnzy.connectus_api.domain.messaging.dto.response.TicketTagResponse;
 import com.vinisnzy.connectus_api.domain.messaging.dto.response.TicketResponse;
 import com.vinisnzy.connectus_api.domain.automation.entity.WhatsAppConnection;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.entity.User;
 import com.vinisnzy.connectus_api.domain.crm.entity.Contact;
+import com.vinisnzy.connectus_api.domain.messaging.entity.TicketTag;
 import com.vinisnzy.connectus_api.domain.messaging.entity.Ticket;
 import com.vinisnzy.connectus_api.domain.messaging.entity.enums.ResolutionType;
 import com.vinisnzy.connectus_api.domain.messaging.entity.enums.TicketStatus;
 import org.mapstruct.*;
+
+import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface TicketMapper {
@@ -110,5 +115,17 @@ public interface TicketMapper {
     default String mapResolutionTypeToString(ResolutionType resolutionType) {
         if (resolutionType == null) return null;
         return resolutionType.name();
+    }
+
+    default List<TicketTagResponse> mapTags(Set<TicketTag> tags) {
+        if (tags == null || tags.isEmpty()) return List.of();
+        return tags.stream()
+                .map(tag -> new TicketTagResponse(
+                        tag.getId(),
+                        tag.getName(),
+                        tag.getColor(),
+                        tag.getDescription()
+                ))
+                .toList();
     }
 }
