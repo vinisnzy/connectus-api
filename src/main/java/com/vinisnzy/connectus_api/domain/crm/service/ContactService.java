@@ -53,6 +53,23 @@ public class ContactService {
         return mapper.toResponse(contact);
     }
 
+    @Transactional
+    public Contact findOrCreateByPhone(String phone, UUID companyId) {
+        return contactRepository.findByCompanyIdAndPhone(companyId, phone)
+                .orElseGet(() -> {
+                    Company company = companyRepository.findById(companyId)
+                            .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrada com o id: " + companyId));
+
+                    Contact newContact = new Contact();
+                    newContact.setCompany(company);
+                    newContact.setPhone(phone);
+                    newContact.setName(phone);
+                    newContact.setIsBlocked(false);
+
+                    return contactRepository.save(newContact);
+                });
+    }
+
     public ContactResponse findByEmail(String email) {
         UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
         Contact contact = contactRepository.findByCompanyIdAndEmail(companyId, email)
