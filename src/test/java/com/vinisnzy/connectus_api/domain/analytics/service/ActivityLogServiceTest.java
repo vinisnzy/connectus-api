@@ -17,6 +17,8 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -74,10 +76,11 @@ class ActivityLogServiceTest {
         try (MockedStatic<SecurityUtils> mockedSecurity = mockStatic(SecurityUtils.class)) {
             mockedSecurity.when(SecurityUtils::getCurrentCompanyIdOrThrow).thenReturn(companyId);
             Page<ActivityLog> logPage = new PageImpl<>(List.of(activityLog));
+            Pageable pageable = PageRequest.of(0, 10);
 
             when(activityLogRepository.findByCompanyIdOrderByCreatedAt(eq(companyId), any())).thenReturn(logPage);
             when(mapper.toResponse(activityLog)).thenReturn(activityLogResponse);
-            List<ActivityLogResponse> result = activityLogService.getLogsByCompany(companyId, 0, 10);
+            List<ActivityLogResponse> result = activityLogService.getLogsByCompany(companyId, pageable);
 
             assertThat(result).hasSize(1);
             verify(activityLogRepository).findByCompanyIdOrderByCreatedAt(eq(companyId), any());
@@ -103,10 +106,11 @@ class ActivityLogServiceTest {
     @DisplayName("Should return empty list when no activity logs found")
     void shouldReturnEmptyListWhenNoActivityLogsFound() {
         try (MockedStatic<SecurityUtils> mockedSecurity = mockStatic(SecurityUtils.class)) {
+            Pageable pageable = PageRequest.of(0, 10);
             mockedSecurity.when(SecurityUtils::getCurrentCompanyIdOrThrow).thenReturn(companyId);
             when(activityLogRepository.findByCompanyIdOrderByCreatedAt(eq(companyId), any())).thenReturn(new PageImpl<>(List.of()));
 
-            List<ActivityLogResponse> result = activityLogService.getLogsByCompany(companyId, 0, 10);
+            List<ActivityLogResponse> result = activityLogService.getLogsByCompany(companyId, pageable);
 
             assertThat(result).isEmpty();
         }

@@ -53,13 +53,13 @@ class PlanServiceTest {
     @Test
     @DisplayName("Should find all active plans")
     void shouldFindAllActivePlans() {
-        when(planRepository.findByIsActiveOrderByYearlyPriceDesc()).thenReturn(List.of(plan));
+        when(planRepository.findByIsActiveTrueOrderByYearlyPriceDesc()).thenReturn(List.of(plan));
         when(mapper.toResponse(plan)).thenReturn(planResponse);
 
         List<PlanResponse> result = planService.findAllActive();
 
         assertThat(result).hasSize(1);
-        verify(planRepository).findByIsActiveOrderByYearlyPriceDesc();
+        verify(planRepository).findByIsActiveTrueOrderByYearlyPriceDesc();
     }
 
     @Test
