@@ -3,7 +3,9 @@ package com.vinisnzy.connectus_api.infra.websocket;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
 import com.vinisnzy.connectus_api.domain.core.entity.Role;
+import com.vinisnzy.connectus_api.domain.core.entity.User;
 import com.vinisnzy.connectus_api.domain.core.repository.RoleRepository;
+import com.vinisnzy.connectus_api.domain.core.repository.UserRepository;
 import com.vinisnzy.connectus_api.infra.security.dto.response.AuthenticatedUser;
 import com.vinisnzy.connectus_api.infra.security.service.TokenService;
 import com.vinisnzy.connectus_api.infra.utils.SecurityUtils;
@@ -26,6 +28,7 @@ public class WebSocketInterceptor implements ChannelInterceptor {
 
     private final TokenService tokenService;
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -48,10 +51,13 @@ public class WebSocketInterceptor implements ChannelInterceptor {
             Role role = roleRepository.findById(roleId)
                     .orElseThrow(() -> new EntityNotFoundException("Função não encontrada com o id: " + roleId));
 
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o id: " + userId));
+
             List<SimpleGrantedAuthority> authorities = SecurityUtils.getAuthoritiesByRole(role);
 
             UsernamePasswordAuthenticationToken authentication
-                    = new UsernamePasswordAuthenticationToken(new AuthenticatedUser(userId, roleId), null, authorities);
+                    = new UsernamePasswordAuthenticationToken(new AuthenticatedUser(userId, user.getCompany().getId(), roleId), null, authorities);
 
             accessor.setUser(authentication);
         }
