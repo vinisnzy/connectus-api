@@ -1,6 +1,7 @@
 package com.vinisnzy.connectus_api.domain.scheduling.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.entity.User;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
@@ -36,6 +37,7 @@ public class AppointmentService {
     private final ServiceRepository serviceRepository;
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
+    private final ActivityLogService activityLogService;
     private final AppointmentMapper mapper;
 
     public List<AppointmentResponse> findAll(Pageable pageable) {
@@ -100,9 +102,10 @@ public class AppointmentService {
     @Transactional
     public AppointmentResponse create(CreateAppointmentRequest request) {
         UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
+        UUID assignedUserId = SecurityUtils.getCurrentUserIdOrThrow();
+
         UUID serviceId = request.serviceId();
         UUID contactId = request.contactId();
-        UUID assignedUserId = request.assignedUserId();
 
         validateEndTimeAfterStartTimeInAppointment(request.startTime(), request.endTime());
 
@@ -133,12 +136,15 @@ public class AppointmentService {
         appointment.setAssignedUser(user);
 
         appointment = appointmentRepository.save(appointment);
+
+        activityLogService.log("ENTITY_CREATED", "Appointment", appointment.getId());
+
         return mapper.toResponse(appointment);
     }
 
     @Transactional
-    public AppointmentResponse update(UpdateAppointmentRequest request) {
-        Appointment appointment = getAppointmentOrThrow(request.id());
+    public AppointmentResponse update(UUID id, UpdateAppointmentRequest request) {
+        Appointment appointment = getAppointmentOrThrow(id);
         ZonedDateTime startTime = request.startTime();
         ZonedDateTime endTime = request.endTime();
         String notes = request.notes();
@@ -158,6 +164,9 @@ public class AppointmentService {
         }
 
         appointment = appointmentRepository.save(appointment);
+
+        activityLogService.log("ENTITY_UPDATED", "Appointment", appointment.getId());
+
         return mapper.toResponse(appointment);
     }
 
@@ -176,6 +185,9 @@ public class AppointmentService {
 
         appointment.setAssignedUser(user);
         appointment = appointmentRepository.save(appointment);
+
+        activityLogService.log("ENTITY_UPDATED", "Appointment", appointment.getId());
+
         return mapper.toResponse(appointment);
     }
 
@@ -193,6 +205,9 @@ public class AppointmentService {
         }
 
         appointment = appointmentRepository.save(appointment);
+
+        activityLogService.log("STATUS_CHANGED", "Appointment", appointment.getId());
+
         return mapper.toResponse(appointment);
     }
 
@@ -204,6 +219,9 @@ public class AppointmentService {
 
         appointment.setStatus(AppointmentStatus.CONFIRMED);
         appointment = appointmentRepository.save(appointment);
+
+        activityLogService.log("STATUS_CHANGED", "Appointment", appointment.getId());
+
         return mapper.toResponse(appointment);
     }
 
@@ -215,6 +233,9 @@ public class AppointmentService {
 
         appointment.setStatus(AppointmentStatus.COMPLETED);
         appointment = appointmentRepository.save(appointment);
+
+        activityLogService.log("STATUS_CHANGED", "Appointment", appointment.getId());
+
         return mapper.toResponse(appointment);
     }
 
@@ -229,6 +250,9 @@ public class AppointmentService {
         appointment.setCancellationReason(reason);
 
         appointment = appointmentRepository.save(appointment);
+
+        activityLogService.log("STATUS_CHANGED", "Appointment", appointment.getId());
+
         return mapper.toResponse(appointment);
     }
 
@@ -240,6 +264,9 @@ public class AppointmentService {
 
         appointment.setStatus(AppointmentStatus.NO_SHOW);
         appointment = appointmentRepository.save(appointment);
+
+        activityLogService.log("STATUS_CHANGED", "Appointment", appointment.getId());
+
         return mapper.toResponse(appointment);
     }
 
@@ -257,6 +284,9 @@ public class AppointmentService {
         appointment.setEndTime(request.newEndTime());
 
         appointment = appointmentRepository.save(appointment);
+
+        activityLogService.log("ENTITY_UPDATED", "Appointment", appointment.getId());
+
         return mapper.toResponse(appointment);
     }
 

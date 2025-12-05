@@ -1,6 +1,7 @@
 package com.vinisnzy.connectus_api.domain.crm.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
 import com.vinisnzy.connectus_api.domain.crm.dto.request.CreateContactGroupRequest;
@@ -26,6 +27,7 @@ public class ContactGroupService {
 
     private final ContactGroupRepository contactGroupRepository;
     private final CompanyRepository companyRepository;
+    private final ActivityLogService activityLogService;
     private final ContactGroupMapper mapper;
     private final ContactRepository contactRepository;
 
@@ -65,6 +67,9 @@ public class ContactGroupService {
         ContactGroup contactGroup = mapper.toEntity(request);
         contactGroup.setCompany(company);
         contactGroup = contactGroupRepository.save(contactGroup);
+
+        activityLogService.log("ENTITY_CREATED", "ContactGroup", contactGroup.getId());
+
         return mapper.toResponse(contactGroup);
     }
 
@@ -79,6 +84,9 @@ public class ContactGroupService {
         mapper.updateEntity(updatedContactGroup, contactGroup);
 
         contactGroup = contactGroupRepository.save(contactGroup);
+
+        activityLogService.log("ENTITY_UPDATED", "ContactGroup", contactGroup.getId());
+
         return mapper.toResponse(contactGroup);
     }
 
@@ -89,6 +97,8 @@ public class ContactGroupService {
         validateGroupBelongsToCompany(contactGroup);
 
         contactRepository.removeGroupFromContacts(id);
+
+        activityLogService.log("ENTITY_DELETED", "ContactGroup", id);
 
         contactGroupRepository.deleteById(id);
     }

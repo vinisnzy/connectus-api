@@ -10,6 +10,7 @@ public record ServiceResponse(
         UUID id,
         String name,
         Integer duration,
-        BigDecimal price
+        BigDecimal price,
+        Boolean isActive
 ) {
 }

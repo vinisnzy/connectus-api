@@ -9,6 +9,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,8 +47,8 @@ public class Company {
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
 
-    @OneToOne(mappedBy = "company")
-    private Subscription subscription;
+    @OneToMany(mappedBy = "company")
+    private List<Subscription> subscriptions;
 
     @PrePersist
     protected void onCreate() {

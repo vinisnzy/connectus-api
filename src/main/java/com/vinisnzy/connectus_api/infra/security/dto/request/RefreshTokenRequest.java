@@ -1,4 +1,4 @@
-package com.vinisnzy.connectus_api.infra.security.dto;
+package com.vinisnzy.connectus_api.infra.security.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

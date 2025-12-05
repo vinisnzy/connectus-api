@@ -22,15 +22,13 @@ public interface QuickReplyMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "company", ignore = true)
-    @Mapping(target = "shortcut", ignore = true)
-    @Mapping(target = "message", ignore = true)
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "mediaType", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "isActive", ignore = true)
     void updateEntity(UpdateQuickReplyRequest request, @MappingTarget QuickReply quickReply);
 
-    @Mapping(target = "title", source = "shortcut")
     @Mapping(target = "messageContent", source = "message")
     @Mapping(target = "usageCount", constant = "0")
     QuickReplyResponse toResponse(QuickReply quickReply);

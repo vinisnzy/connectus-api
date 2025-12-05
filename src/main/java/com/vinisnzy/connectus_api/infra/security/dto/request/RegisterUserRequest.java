@@ -1,16 +1,9 @@
-package com.vinisnzy.connectus_api.infra.security.dto;
+package com.vinisnzy.connectus_api.infra.security.dto.request;
 
+import com.vinisnzy.connectus_api.domain.core.dto.request.CreateCompanyRequest;
 import jakarta.validation.constraints.*;
 
-import java.util.UUID;
-
 public record RegisterUserRequest(
-
-        @NotNull(message = "ID da empresa é obrigatório.")
-        UUID companyId,
-
-        @NotNull(message = "ID da função é obrigatório.")
-        Integer roleId,
 
         @NotBlank(message = "Nome é obrigatório.")
         @Size(min = 3, max = 80, message = "Nome deve ter entre 3 e 80 caracteres.")
@@ -31,8 +24,6 @@ public record RegisterUserRequest(
         @Size(min = 6, message = "A senha deve conter pelo menos 6 caracteres.")
         String password,
 
-        @NotNull(message = "Necessário informar se o usuário é master.")
-        Boolean isMaster
+        CreateCompanyRequest company
 ) {
 }
-

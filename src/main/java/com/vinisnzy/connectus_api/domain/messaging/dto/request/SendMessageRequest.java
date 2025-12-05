@@ -7,10 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public record SendMessageRequest(
-
-        @NotNull(message = "ID da empresa é obrigatório")
-        UUID companyId,
-
         @NotNull(message = "ID do ticket é obrigatório")
         UUID ticketId,
 

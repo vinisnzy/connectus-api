@@ -11,7 +11,6 @@ import org.mapstruct.*;
 public interface RoleMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "company", source = "companyId")
     @Mapping(target = "isSystemRole", constant = "false")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

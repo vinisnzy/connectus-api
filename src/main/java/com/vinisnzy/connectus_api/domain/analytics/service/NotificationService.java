@@ -20,6 +20,7 @@ import java.util.UUID;
 public class NotificationService {
 
     private final NotificationRepository repository;
+    private final ActivityLogService activityLogService;
 
     private final WebSocketService webSocketService;
 
@@ -49,7 +50,10 @@ public class NotificationService {
 
     public void sendNotificationToUser(NotificationRequest request) {
         Notification notification = mapper.toEntity(request);
-        repository.save(notification);
+        notification = repository.save(notification);
+
+        activityLogService.log("ENTITY_CREATED", "Notification", notification.getId());
+
         NotificationResponse payload = mapper.toResponse(notification);
 
         webSocketService.sendToUser(request.userId(), "/queue/notifications", payload);
@@ -57,7 +61,10 @@ public class NotificationService {
 
     public void sendNotificationToCompany(NotificationRequest request) {
         Notification notification = mapper.toEntity(request);
-        repository.save(notification);
+        notification = repository.save(notification);
+
+        activityLogService.log("ENTITY_CREATED", "Notification", notification.getId());
+
         NotificationResponse response = mapper.toResponse(notification);
 
         String topic = "/topic/company/" + notification.getUser().getCompany().getId() + "/notifications";

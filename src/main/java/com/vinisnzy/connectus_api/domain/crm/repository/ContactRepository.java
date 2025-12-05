@@ -27,18 +27,24 @@ public interface ContactRepository extends JpaRepository<Contact, UUID> {
     Page<Contact> findByGroupId(@Param("group") UUID groupId, Pageable pageable);
 
     @Modifying
-    @Query("""
-                UPDATE Contact c
-                SET c.groups = array_remove(c.groups, :groupId)
-                WHERE :groupId = ANY(c.groups)
-            """)
+    @Query(
+            value = """
+                    UPDATE crm.contacts
+                    SET groups = array_remove(groups, :groupId)
+                    WHERE :groupId = ANY(groups)
+                    """,
+            nativeQuery = true
+    )
     void removeGroupFromContacts(@Param("groupId") UUID groupId);
 
-    @Query("""
-                SELECT COUNT(c)
-                FROM Contact c
-                WHERE :groupId = ANY(c.groups)
-            """)
+    @Query(
+            value = """
+                        SELECT COUNT(*)
+                        FROM crm.contacts c
+                        WHERE :groupId = ANY(c.groups)
+                    """,
+            nativeQuery = true
+    )
     long countContactsByGroup(@Param("groupId") UUID groupId);
 
     @Query("""

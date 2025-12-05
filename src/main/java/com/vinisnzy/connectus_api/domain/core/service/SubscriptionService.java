@@ -1,6 +1,7 @@
 package com.vinisnzy.connectus_api.domain.core.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.dto.request.CreateSubscriptionRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.request.UpdateSubscriptionRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.response.SubscriptionResponse;
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,6 +35,7 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final CompanyRepository companyRepository;
     private final PlanRepository planRepository;
+    private final ActivityLogService activityLogService;
     private final SubscriptionMapper mapper;
 
     public List<SubscriptionResponse> findAll(Pageable pageable) {
@@ -50,9 +53,19 @@ public class SubscriptionService {
 
     public SubscriptionResponse findCurrentCompanySubscription() {
         UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
-        Subscription subscription = subscriptionRepository.findByCompanyId(companyId)
-                .orElseThrow(() -> new EntityNotFoundException("Inscrição não encontrada para a empresa com o id: " + companyId));
-        return mapper.toResponse(subscription);
+        Optional<Subscription> subscription = subscriptionRepository
+                .findByCompanyIdAndStatusIn(companyId, List.of(SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIAL));
+        if (subscription.isEmpty()) {
+            throw new IllegalStateException("Inscrição ativa não encontrada para a empresa com o id: " + companyId);
+        }
+        return mapper.toResponse(subscription.get());
+    }
+
+    public List<SubscriptionResponse> findAllByCompanyId(UUID companyId) {
+        List<Subscription> subscriptions = subscriptionRepository.findByCompanyId(companyId);
+        return subscriptions.stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 
     @Transactional
@@ -61,8 +74,12 @@ public class SubscriptionService {
         Company company = companyRepository.findById(request.companyId())
                 .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrada com o id: " + request.companyId()));
 
-        if (company.getSubscription() != null &&
-                company.getSubscription().getStatus() == SubscriptionStatus.ACTIVE) {
+        boolean hasActiveSubscription = subscriptionRepository.findByCompanyIdAndStatusIn(
+                company.getId(),
+                List.of(SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIAL)
+        ).isPresent();
+
+        if (hasActiveSubscription) {
             throw new IllegalArgumentException("A empresa já possui uma assinatura ativa");
         }
 
@@ -105,6 +122,8 @@ public class SubscriptionService {
 
         subscription = subscriptionRepository.save(subscription);
 
+        activityLogService.log("ENTITY_CREATED", "Subscription", subscription.getId());
+
         return mapper.toResponse(subscription);
     }
 
@@ -131,6 +150,7 @@ public class SubscriptionService {
 
             BigDecimal finalPrice = price.multiply(discountPercentage);
 
+            subscription.setDiscountPercentage(request.discountPercentage());
             subscription.setPrice(price);
             subscription.setFinalPrice(finalPrice);
         }
@@ -147,6 +167,9 @@ public class SubscriptionService {
         }
 
         subscription = subscriptionRepository.save(subscription);
+
+        activityLogService.log("ENTITY_UPDATED", "Subscription", subscription.getId());
+
         return mapper.toResponse(subscription);
     }
 
@@ -160,6 +183,9 @@ public class SubscriptionService {
         subscription.setCanceledAt(ZonedDateTime.now());
 
         subscription = subscriptionRepository.save(subscription);
+
+        activityLogService.log("STATUS_CHANGED", "Subscription", subscription.getId());
+
         return mapper.toResponse(subscription);
     }
 
@@ -186,6 +212,9 @@ public class SubscriptionService {
         subscription.setStatus(SubscriptionStatus.ACTIVE);
 
         subscription = subscriptionRepository.save(subscription);
+
+        activityLogService.log("STATUS_CHANGED", "Subscription", subscription.getId());
+
         return mapper.toResponse(subscription);
     }
 
@@ -197,6 +226,9 @@ public class SubscriptionService {
         // TODO: Send notification
 
         subscription = subscriptionRepository.save(subscription);
+
+        activityLogService.log("STATUS_CHANGED", "Subscription", subscription.getId());
+
         return mapper.toResponse(subscription);
     }
 
@@ -213,6 +245,9 @@ public class SubscriptionService {
         subscription.setStatus(SubscriptionStatus.ACTIVE);
 
         subscription = subscriptionRepository.save(subscription);
+
+        activityLogService.log("STATUS_CHANGED", "Subscription", subscription.getId());
+
         return mapper.toResponse(subscription);
     }
 

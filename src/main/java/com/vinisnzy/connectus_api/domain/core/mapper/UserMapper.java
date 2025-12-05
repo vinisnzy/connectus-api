@@ -38,6 +38,8 @@ public interface UserMapper {
     void updateEntity(UpdateUserRequest request, @MappingTarget User user);
 
     @Mapping(target = "status", source = "status")
+    @Mapping(target = "companyId", source = "company.id")
+    @Mapping(target = "roleId", source = "role.id")
     UserResponse toResponse(User user);
 
     default Company mapCompany(java.util.UUID companyId) {

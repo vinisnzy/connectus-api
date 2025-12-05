@@ -5,13 +5,15 @@ import com.vinisnzy.connectus_api.domain.scheduling.dto.request.RescheduleAppoin
 import com.vinisnzy.connectus_api.domain.scheduling.dto.response.AppointmentResponse;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.entity.User;
+import com.vinisnzy.connectus_api.domain.core.mapper.UserMapper;
 import com.vinisnzy.connectus_api.domain.crm.entity.Contact;
+import com.vinisnzy.connectus_api.domain.crm.mapper.ContactMapper;
 import com.vinisnzy.connectus_api.domain.scheduling.entity.Appointment;
 import com.vinisnzy.connectus_api.domain.scheduling.entity.Service;
 import com.vinisnzy.connectus_api.domain.scheduling.entity.enums.AppointmentStatus;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {ContactMapper.class, ServiceMapper.class, UserMapper.class})
 public interface AppointmentMapper {
 
     @Mapping(target = "id", ignore = true)

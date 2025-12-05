@@ -22,6 +22,7 @@ public interface NotificationMapper {
     Notification toEntity(NotificationRequest request);
 
     @Mapping(target = "type", source = "type")
+    @Mapping(target = "userId", source = "user.id")
     NotificationResponse toResponse(Notification notification);
 
     default User mapUser(java.util.UUID userId) {

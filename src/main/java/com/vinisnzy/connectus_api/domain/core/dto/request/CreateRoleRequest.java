@@ -9,9 +9,6 @@ import java.util.UUID;
 
 @Builder
 public record CreateRoleRequest(
-        @NotNull(message = "O id da empresa é obrigatório")
-        UUID companyId,
-
         @NotBlank(message = "O nome do cargo é obrigatório")
         String name,
 

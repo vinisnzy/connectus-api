@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PlanRepository extends JpaRepository<Plan, UUID> {
-    List<Plan> findAllOrderByYearlyPriceDesc();
-    List<Plan> findByIsActiveOrderByYearlyPriceDesc();
+    List<Plan> findAllByOrderByYearlyPriceDesc();
+    List<Plan> findByIsActiveTrueOrderByYearlyPriceDesc();
     Optional<Plan> findByName(String name);
 }

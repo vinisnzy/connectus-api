@@ -2,6 +2,10 @@ package com.vinisnzy.connectus_api.domain.messaging.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
 import com.vinisnzy.connectus_api.api.exception.SendMessageException;
+import com.vinisnzy.connectus_api.domain.analytics.dto.request.NotificationRequest;
+import com.vinisnzy.connectus_api.domain.analytics.entity.enums.NotificationType;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
+import com.vinisnzy.connectus_api.domain.analytics.service.NotificationService;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.entity.User;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
@@ -43,6 +47,8 @@ public class MessageService {
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
     private final ContactService contactService;
+    private final ActivityLogService activityLogService;
+    private final NotificationService notificationService;
     private final MessageMapper mapper;
     private final N8nClient n8nClient;
     private final TicketService ticketService;
@@ -96,6 +102,8 @@ public class MessageService {
             n8nClient.sendMessage(request);
             message = messageRepository.save(message);
 
+            activityLogService.log("ENTITY_CREATED", "Message", message.getId());
+
             contactService.updateLastInteraction(ticket.getContact().getId());
 
             return mapper.toResponse(message);
@@ -112,7 +120,7 @@ public class MessageService {
 
         Ticket ticket = ticketRepository.findFirstByContactIdAndStatusOpenOrPending(contact.getId())
                 .orElseGet(() -> {
-                    CreateTicketRequest ticketRequest = new CreateTicketRequest(contact.getId(), null, null);
+                    CreateTicketRequest ticketRequest = new CreateTicketRequest(contact.getId(), null);
                     TicketResponse ticketResponse = ticketService.create(ticketRequest);
                     return getTicketOrThrow(ticketResponse.id());
                 });
@@ -129,8 +137,21 @@ public class MessageService {
 
         message = messageRepository.save(message);
 
+        activityLogService.log("ENTITY_CREATED", "Message", message.getId());
+
         contactService.updateLastInteraction(contact.getId());
         markAsDelivered(message.getId());
+
+        // Enviar notificação para o usuário atribuído ao ticket, se houver
+        if (ticket.getAssignedUser() != null) {
+            NotificationRequest notificationRequest = NotificationRequest.builder()
+                    .userId(ticket.getAssignedUser().getId())
+                    .title("Nova mensagem recebida")
+                    .message("Você recebeu uma nova mensagem do contato " + contact.getName())
+                    .type(NotificationType.INFO)
+                    .build();
+            notificationService.sendNotificationToUser(notificationRequest);
+        }
 
         return mapper.toResponse(message);
     }
@@ -186,6 +207,9 @@ public class MessageService {
     @Transactional
     public void delete(UUID id) {
         Message message = getMessageOrThrow(id);
+
+        activityLogService.log("ENTITY_DELETED", "Message", id);
+
         // TODO: Adicionar e utilizar método do N8nClient para apaagar a mensagem no WhatsApp também
         messageRepository.deleteById(message.getId());
     }

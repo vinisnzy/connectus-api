@@ -16,7 +16,7 @@ public record UpdateQuickReplyRequest(
         @Size(max = 100, message = "Título deve ter no máximo 100 caracteres")
         String title,
 
-        String messageContent,
+        String message,
 
         String mediaUrl
 ) {

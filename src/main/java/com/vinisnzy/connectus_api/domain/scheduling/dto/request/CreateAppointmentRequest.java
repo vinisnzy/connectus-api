@@ -13,9 +13,6 @@ public record CreateAppointmentRequest(
         @NotNull(message = "ID do serviço é obrigatório")
         UUID serviceId,
 
-        @NotNull(message = "ID do usuário responsável é obrigatório")
-        UUID assignedUserId,
-
         @NotNull(message = "Data e hora de início são obrigatórias")
         @Future(message = "Data e hora de início devem ser no futuro")
         ZonedDateTime startTime,

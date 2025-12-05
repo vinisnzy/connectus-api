@@ -1,6 +1,10 @@
 package com.vinisnzy.connectus_api.domain.messaging.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.dto.request.NotificationRequest;
+import com.vinisnzy.connectus_api.domain.analytics.entity.enums.NotificationType;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
+import com.vinisnzy.connectus_api.domain.analytics.service.NotificationService;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.entity.User;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
@@ -40,6 +44,8 @@ public class TicketService {
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
     private final TicketTagRepository ticketTagRepository;
+    private final ActivityLogService activityLogService;
+    private final NotificationService notificationService;
     private final TicketMapper mapper;
 
     public List<TicketResponse> findAll(Pageable pageable) {
@@ -86,6 +92,7 @@ public class TicketService {
     @Transactional
     public TicketResponse create(CreateTicketRequest request) {
         UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
+        UUID userId = SecurityUtils.getCurrentUserIdOrThrow();
 
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrada com o id: " + companyId));
@@ -112,13 +119,16 @@ public class TicketService {
                 .orElse(0);
         ticket.setTicketNumber(lastTicketNumber + 1);
 
-        if (request.assignedUserId() != null) {
-            User user = userRepository.findById(request.assignedUserId())
-                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o id: " + request.assignedUserId()));
-            ticket.setAssignedUser(user);
-        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o id: " + userId));
+
+        ticket.setAssignedUser(user);
 
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("ENTITY_CREATED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -147,6 +157,9 @@ public class TicketService {
         }
 
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("ENTITY_UPDATED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -163,6 +176,9 @@ public class TicketService {
 
         ticket.setAssignedUser(user);
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("ENTITY_UPDATED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -172,6 +188,9 @@ public class TicketService {
 
         ticket.setAssignedUser(null);
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("ENTITY_UPDATED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -191,6 +210,9 @@ public class TicketService {
         }
 
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("STATUS_CHANGED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -204,6 +226,20 @@ public class TicketService {
         ticket.setResolvedAt(ZonedDateTime.now());
 
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("TICKET_RESOLVED", "Ticket", ticket.getId());
+
+        // Enviar notificação para o usuário atribuído ao ticket, se houver
+        if (ticket.getAssignedUser() != null) {
+            NotificationRequest notificationRequest = NotificationRequest.builder()
+                    .userId(ticket.getAssignedUser().getId())
+                    .title("Ticket resolvido")
+                    .message("O ticket #" + ticket.getTicketNumber() + " foi resolvido")
+                    .type(NotificationType.SUCCESS)
+                    .build();
+            notificationService.sendNotificationToUser(notificationRequest);
+        }
+
         return mapper.toResponse(ticket);
     }
 
@@ -215,6 +251,9 @@ public class TicketService {
         ticket.setClosedAt(ZonedDateTime.now());
 
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("STATUS_CHANGED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -229,6 +268,9 @@ public class TicketService {
         ticket.setResolutionNotes(null);
 
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("STATUS_CHANGED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -240,6 +282,9 @@ public class TicketService {
         ticket.setPendingUntil(pendingUntil);
 
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("STATUS_CHANGED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -252,6 +297,9 @@ public class TicketService {
 
         ticket.setIsArchived(true);
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("ENTITY_UPDATED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -261,6 +309,9 @@ public class TicketService {
 
         ticket.setIsArchived(false);
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("ENTITY_UPDATED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 
@@ -286,6 +337,9 @@ public class TicketService {
 
         ticket.setTags(existingTags);
         ticket = ticketRepository.save(ticket);
+
+        activityLogService.log("ENTITY_UPDATED", "Ticket", ticket.getId());
+
         return mapper.toResponse(ticket);
     }
 

@@ -14,7 +14,8 @@ public interface CompanyMapper {
     @Mapping(target = "isVerified", constant = "false")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "subscription", ignore = true)
+    @Mapping(target = "subscriptions", ignore = true)
+    @Mapping(target = "settings", ignore = true)
     Company toEntity(CreateCompanyRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -22,7 +23,8 @@ public interface CompanyMapper {
     @Mapping(target = "isVerified", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "subscription", ignore = true)
+    @Mapping(target = "subscriptions", ignore = true)
+    @Mapping(target = "settings", ignore = true)
     void updateEntity(UpdateCompanyRequest request, @MappingTarget Company company);
 
     CompanyResponse toResponse(Company company);

@@ -23,7 +23,6 @@ public interface TicketMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "company", ignore = true)
     @Mapping(target = "contact", source = "contactId")
-    @Mapping(target = "assignedUser", source = "assignedUserId")
     @Mapping(target = "whatsappConnection", ignore = true)
     @Mapping(target = "ticketNumber", ignore = true)
     @Mapping(target = "priority", constant = "0")

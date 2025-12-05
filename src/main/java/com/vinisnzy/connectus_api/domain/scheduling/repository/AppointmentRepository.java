@@ -4,26 +4,38 @@ import com.vinisnzy.connectus_api.domain.scheduling.entity.Appointment;
 import com.vinisnzy.connectus_api.domain.scheduling.entity.enums.AppointmentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
+    @Override
+    Optional<Appointment> findById(UUID id);
+
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     Page<Appointment> findByCompanyIdOrderByStartTimeDesc(UUID companyId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     Page<Appointment> findByCompanyIdAndStatusOrderByStartTimeAsc(UUID companyId, AppointmentStatus status, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     Page<Appointment> findByContactIdOrderByStartTimeDesc(UUID contactId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     Page<Appointment> findByAssignedUserIdOrderByStartTimeAsc(UUID userId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     Page<Appointment> findByServiceIdOrderByStartTimeDesc(UUID serviceId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     @Query("""
                 SELECT a FROM Appointment a
                 WHERE a.company.id = :companyId
@@ -36,6 +48,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
             @Param("endDate") ZonedDateTime endDate
     );
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     @Query("""
                 SELECT a
                 FROM Appointment a
@@ -51,6 +64,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
             @Param("status") AppointmentStatus status
     );
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     @Query("""
                 SELECT a
                 FROM Appointment a
@@ -78,6 +92,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
             @Param("endOfDay") ZonedDateTime endOfDay
     );
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     @Query("""
                 SELECT a
                 FROM Appointment a
@@ -103,5 +118,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
             @Param("status") AppointmentStatus status
     );
 
+    @EntityGraph(attributePaths = {"contact", "service", "assignedUser", "assignedUser.company", "assignedUser.role"})
     List<Appointment> findTop10ByContactIdOrderByStartTimeDesc(UUID contactId);
 }

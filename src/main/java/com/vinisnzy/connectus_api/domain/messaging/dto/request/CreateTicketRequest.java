@@ -8,8 +8,6 @@ public record CreateTicketRequest(
         @NotNull(message = "ID do contato é obrigatório")
         UUID contactId,
 
-        UUID assignedUserId,
-
         String initialMessage
 ) {
 }

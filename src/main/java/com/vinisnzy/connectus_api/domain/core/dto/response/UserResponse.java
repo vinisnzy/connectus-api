@@ -16,7 +16,7 @@ public record UserResponse(
         UserStatus status,
         Boolean isActive,
         ZonedDateTime lastSeenAt,
-        RoleResponse role,
-        CompanyResponse company
+        Integer roleId,
+        UUID companyId
 ) {
 }

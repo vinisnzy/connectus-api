@@ -1,10 +1,12 @@
 package com.vinisnzy.connectus_api.domain.core.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.dto.request.CreateRoleRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.request.UpdateRolePermissionsRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.request.UpdateRoleRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.response.RoleResponse;
+import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.entity.Role;
 import com.vinisnzy.connectus_api.domain.core.mapper.RoleMapper;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
@@ -13,6 +15,7 @@ import com.vinisnzy.connectus_api.domain.core.repository.UserRepository;
 import com.vinisnzy.connectus_api.infra.utils.JsonUtils;
 import com.vinisnzy.connectus_api.infra.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,7 @@ public class RoleService {
     private final RoleRepository roleRepository;
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
+    private final ActivityLogService activityLogService;
 
     private final RoleMapper mapper;
 
@@ -45,10 +49,15 @@ public class RoleService {
     }
 
     public List<RoleResponse> findSystemRoles() {
-        return roleRepository.findByIsSystemRole()
+        return roleRepository.findByIsSystemRoleTrue()
                 .stream()
                 .map(mapper::toResponse)
                 .toList();
+    }
+
+    public Role findRoleByName(String name) {
+        return roleRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new EntityNotFoundException("Cargo não encontrado com o nome: " + name));
     }
 
     @Transactional
@@ -60,9 +69,19 @@ public class RoleService {
         }
 
         JsonUtils.validateRolePermissionsJson(request.permissions());
+        var permissions = JsonUtils.mergeRolePermissions(request.permissions());
 
         Role role = mapper.toEntity(request);
+
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrada com o id: " + companyId));
+
+        role.setCompany(company);
+        role.setPermissions(permissions);
         role = roleRepository.save(role);
+
+        activityLogService.log("ENTITY_CREATED", "Role", role.getId());
+
         return mapper.toResponse(role);
     }
 
@@ -77,12 +96,17 @@ public class RoleService {
             throw new IllegalArgumentException("O nome do cargo já existe na empresa.");
         }
 
-        // TODO: Validate permissions structure
         JsonUtils.validateRolePermissionsJson(updatedRole.permissions());
+        var permissions = JsonUtils.mergeRolePermissions(updatedRole.permissions());
 
         mapper.updateEntity(updatedRole, role);
 
+        role.setPermissions(permissions);
+
         role = roleRepository.save(role);
+
+        activityLogService.log("ENTITY_UPDATED", "Role", role.getId());
+
         return mapper.toResponse(role);
     }
 
@@ -96,6 +120,8 @@ public class RoleService {
             throw new IllegalArgumentException("Não é possível deletar um cargo atribuído a usuários.");
         }
 
+        activityLogService.log("ENTITY_DELETED", "Role", id);
+
         roleRepository.deleteById(id);
     }
 
@@ -104,14 +130,18 @@ public class RoleService {
         Role role = getRoleByIdOrThrow(id);
 
         JsonUtils.validateRolePermissionsJson(permissionsData.permissions());
+        var permissions = JsonUtils.mergeRolePermissions(permissionsData.permissions());
 
         if (Boolean.TRUE.equals(role.getIsSystemRole())) {
             throw new IllegalArgumentException("Não é possível alterar as permissões de um cargo do sistema.");
         }
 
-        role.setPermissions(permissionsData.permissions());
+        role.setPermissions(permissions);
 
         role = roleRepository.save(role);
+
+        activityLogService.log("PERMISSIONS_CHANGED", "Role", role.getId());
+
         return mapper.toResponse(role);
     }
 
@@ -140,16 +170,21 @@ public class RoleService {
         newRole.setIsSystemRole(false);
 
         newRole = roleRepository.save(newRole);
+
+        activityLogService.log("ENTITY_CREATED", "Role", newRole.getId());
+
         return mapper.toResponse(newRole);
     }
 
     private Role getRoleByIdOrThrow(Integer id) {
-        return roleRepository.findById(id)
+        return roleRepository.findByIdWithCompany(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cargo não encontrado com o id: " + id));
     }
 
     private void validateRoleByCurrentCompany(Role role) {
-        if (role.getCompany().getId() != SecurityUtils.getCurrentCompanyIdOrThrow()) {
+        UUID roleCompanyId = role.getCompany().getId();
+        UUID currentCompanyId = SecurityUtils.getCurrentCompanyIdOrThrow();
+        if (!roleCompanyId.equals(currentCompanyId)) {
             throw new EntityNotFoundException("Cargo não pertence à empresa do usuário autenticado.");
         }
     }

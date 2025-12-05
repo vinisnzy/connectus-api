@@ -1,6 +1,7 @@
 package com.vinisnzy.connectus_api.domain.crm.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
 import com.vinisnzy.connectus_api.domain.crm.dto.request.CreateContactRequest;
@@ -27,6 +28,7 @@ public class ContactService {
 
     private final ContactRepository contactRepository;
     private final CompanyRepository companyRepository;
+    private final ActivityLogService activityLogService;
 
     private final ContactMapper mapper;
 
@@ -66,7 +68,11 @@ public class ContactService {
                     newContact.setName(phone);
                     newContact.setIsBlocked(false);
 
-                    return contactRepository.save(newContact);
+                    Contact savedContact = contactRepository.save(newContact);
+
+                    activityLogService.log("ENTITY_CREATED", "Contact", savedContact.getId());
+
+                    return savedContact;
                 });
     }
 
@@ -99,6 +105,9 @@ public class ContactService {
         }
 
         contact = contactRepository.save(contact);
+
+        activityLogService.log("ENTITY_CREATED", "Contact", contact.getId());
+
         return mapper.toResponse(contact);
     }
 
@@ -119,6 +128,9 @@ public class ContactService {
         }
 
         contact = contactRepository.save(contact);
+
+        activityLogService.log("ENTITY_UPDATED", "Contact", contact.getId());
+
         return mapper.toResponse(contact);
     }
 
@@ -126,6 +138,8 @@ public class ContactService {
     public void delete(UUID id) {
         Contact contact = getContactOrThrow(id);
         validateContactBelongsToCompany(contact);
+
+        activityLogService.log("ENTITY_DELETED", "Contact", id);
 
         contactRepository.deleteById(id);
     }
@@ -138,6 +152,9 @@ public class ContactService {
 
         contact.setIsBlocked(isBlocked);
         contact = contactRepository.save(contact);
+
+        activityLogService.log("STATUS_CHANGED", "Contact", contact.getId());
+
         return mapper.toResponse(contact);
     }
 
@@ -168,6 +185,9 @@ public class ContactService {
 
         contact.setTags(mergedTags.toArray(new String[0]));
         contact = contactRepository.save(contact);
+
+        activityLogService.log("ENTITY_UPDATED", "Contact", contact.getId());
+
         return mapper.toResponse(contact);
     }
 
@@ -184,6 +204,9 @@ public class ContactService {
         }
 
         contact = contactRepository.save(contact);
+
+        activityLogService.log("ENTITY_UPDATED", "Contact", contact.getId());
+
         return mapper.toResponse(contact);
     }
 
@@ -204,6 +227,9 @@ public class ContactService {
 
         contact.setGroups(mergedGroups.toArray(new UUID[0]));
         contact = contactRepository.save(contact);
+
+        activityLogService.log("ENTITY_UPDATED", "Contact", contact.getId());
+
         return mapper.toResponse(contact);
     }
 
@@ -220,6 +246,9 @@ public class ContactService {
         }
 
         contact = contactRepository.save(contact);
+
+        activityLogService.log("ENTITY_UPDATED", "Contact", contact.getId());
+
         return mapper.toResponse(contact);
     }
 
@@ -259,6 +288,11 @@ public class ContactService {
                 .toList();
 
         List<Contact> savedContacts = contactRepository.saveAll(validContacts);
+
+        savedContacts.forEach(contact ->
+            activityLogService.log("ENTITY_CREATED", "Contact", contact.getId())
+        );
+
         return savedContacts.stream()
                 .map(mapper::toResponse)
                 .toList();

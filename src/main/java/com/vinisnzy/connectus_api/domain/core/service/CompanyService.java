@@ -1,6 +1,7 @@
 package com.vinisnzy.connectus_api.domain.core.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.dto.request.CreateCompanyRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.request.UpdateCompanyRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.response.CompanyResponse;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final ActivityLogService activityLogService;
     private final CompanyMapper mapper;
 
     public CompanyResponse findById(UUID id) {
@@ -53,7 +55,11 @@ public class CompanyService {
 
         // TODO: Send verification email
 
-        return companyRepository.save(company);
+        company = companyRepository.save(company);
+
+        activityLogService.log("ENTITY_CREATED", "Company", company.getId());
+
+        return company;
     }
 
     @Transactional
@@ -67,7 +73,11 @@ public class CompanyService {
 
         mapper.updateEntity(updatedCompany, company);
 
-        return companyRepository.save(company);
+        company = companyRepository.save(company);
+
+        activityLogService.log("ENTITY_UPDATED", "Company", company.getId());
+
+        return company;
     }
 
     @Transactional
@@ -79,6 +89,8 @@ public class CompanyService {
             throw new IllegalArgumentException("Empresa não encontrada com o id: " + id);
         }
 
+        activityLogService.log("ENTITY_DELETED", "Company", id);
+
         companyRepository.deleteById(id);
     }
 
@@ -89,7 +101,11 @@ public class CompanyService {
         // TODO: Add business logic (notify users, cancel active sessions, etc.)
 
         company.setIsActive(isActive);
-        return companyRepository.save(company);
+        company = companyRepository.save(company);
+
+        activityLogService.log("STATUS_CHANGED", "Company", company.getId());
+
+        return company;
     }
 
     @Transactional
@@ -100,7 +116,11 @@ public class CompanyService {
         // TODO: Send notification to company admin
 
         company.setIsVerified(true);
-        return companyRepository.save(company);
+        company = companyRepository.save(company);
+
+        activityLogService.log("STATUS_CHANGED", "Company", company.getId());
+
+        return company;
     }
 
     @Transactional
@@ -109,7 +129,11 @@ public class CompanyService {
 
         Map<String, Object> settings = JsonUtils.mergeMapWithJsonString(company.getSettings(), settingsJson);
         company.setSettings(settings);
-        return companyRepository.save(company);
+        company = companyRepository.save(company);
+
+        activityLogService.log("ENTITY_UPDATED", "Company", company.getId());
+
+        return company;
     }
 
     private void validateCnpj(String cnpj) {

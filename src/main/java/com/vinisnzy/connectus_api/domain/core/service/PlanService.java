@@ -1,7 +1,9 @@
 package com.vinisnzy.connectus_api.domain.core.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.dto.request.CreatePlanRequest;
+import com.vinisnzy.connectus_api.domain.core.dto.request.UpdatePricingPlanRequest;
 import com.vinisnzy.connectus_api.shared.dto.UpdateJsonRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.request.UpdatePlanRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.response.PlanResponse;
@@ -24,18 +26,19 @@ public class PlanService {
 
     private final PlanRepository planRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final ActivityLogService activityLogService;
 
     private final PlanMapper mapper;
 
     public List<PlanResponse> findAll() {
-        return planRepository.findAllOrderByYearlyPriceDesc()
+        return planRepository.findAllByOrderByYearlyPriceDesc()
                 .stream()
                 .map(mapper::toResponse)
                 .toList();
     }
 
     public List<PlanResponse> findAllActive() {
-        return planRepository.findByIsActiveOrderByYearlyPriceDesc()
+        return planRepository.findByIsActiveTrueOrderByYearlyPriceDesc()
                 .stream()
                 .map(mapper::toResponse)
                 .toList();
@@ -54,6 +57,8 @@ public class PlanService {
         validatePricing(request.monthlyPrice(), request.yearlyPrice());
         Plan plan = planRepository.save(mapper.toEntity(request));
 
+        activityLogService.log("ENTITY_CREATED", "Plan", plan.getId());
+
         return mapper.toResponse(plan);
     }
 
@@ -67,6 +72,9 @@ public class PlanService {
         mapper.updateEntity(request, plan);
 
         plan = planRepository.save(plan);
+
+        activityLogService.log("ENTITY_UPDATED", "Plan", plan.getId());
+
         return mapper.toResponse(plan);
     }
 
@@ -78,6 +86,9 @@ public class PlanService {
         if (planHaveActiveSubscriptions(id)) {
             throw new IllegalArgumentException("Não é possível deletar um plano que possui assinaturas ativas");
         }
+
+        activityLogService.log("ENTITY_DELETED", "Plan", id);
+
         planRepository.deleteById(id);
     }
 
@@ -91,11 +102,14 @@ public class PlanService {
         }
         plan.setIsActive(isActive);
         plan = planRepository.save(plan);
+
+        activityLogService.log("STATUS_CHANGED", "Plan", plan.getId());
+
         return mapper.toResponse(plan);
     }
 
     @Transactional
-    public PlanResponse updatePricing(UUID id, UpdatePlanRequest request) {
+    public PlanResponse updatePricing(UUID id, UpdatePricingPlanRequest request) {
         Plan plan = getPlanByIdOrThrow(id);
 
         validatePricing(request.monthlyPrice(), request.yearlyPrice());
@@ -106,6 +120,9 @@ public class PlanService {
         plan.setYearlyPrice(request.yearlyPrice());
 
         plan = planRepository.save(plan);
+
+        activityLogService.log("ENTITY_UPDATED", "Plan", plan.getId());
+
         return mapper.toResponse(plan);
     }
 
@@ -120,6 +137,9 @@ public class PlanService {
         plan.setLimits(limitsData.data());
 
         plan = planRepository.save(plan);
+
+        activityLogService.log("ENTITY_UPDATED", "Plan", plan.getId());
+
         return mapper.toResponse(plan);
     }
 
@@ -131,9 +151,12 @@ public class PlanService {
 
         // TODO: Check impact on existing subscriptions
 
-        plan.setLimits(featuresData.data());
+        plan.setFeatures(featuresData.data());
 
         plan = planRepository.save(plan);
+
+        activityLogService.log("ENTITY_UPDATED", "Plan", plan.getId());
+
         return mapper.toResponse(plan);
     }
 

@@ -1,6 +1,7 @@
 package com.vinisnzy.connectus_api.domain.scheduling.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
 import com.vinisnzy.connectus_api.domain.scheduling.dto.request.CreateServiceRequest;
@@ -24,6 +25,7 @@ public class SchedulingService {
 
     private final ServiceRepository serviceRepository;
     private final CompanyRepository companyRepository;
+    private final ActivityLogService activityLogService;
     private final ServiceMapper mapper;
 
     public List<ServiceResponse> findAll(Pageable pageable) {
@@ -70,6 +72,9 @@ public class SchedulingService {
         service.setCompany(company);
 
         service = serviceRepository.save(service);
+
+        activityLogService.log("ENTITY_CREATED", "Service", service.getId());
+
         return mapper.toResponse(service);
     }
 
@@ -81,6 +86,9 @@ public class SchedulingService {
 
         mapper.updateEntity(request, service);
         service = serviceRepository.save(service);
+
+        activityLogService.log("ENTITY_UPDATED", "Service", service.getId());
+
         return mapper.toResponse(service);
     }
 
@@ -89,6 +97,9 @@ public class SchedulingService {
         Service service = getServiceOrThrow(id);
 
         validateServiceBelongsToCompany(service);
+
+        activityLogService.log("ENTITY_DELETED", "Service", id);
+
         serviceRepository.deleteById(id);
     }
 
@@ -100,6 +111,9 @@ public class SchedulingService {
 
         service.setIsActive(isActive);
         service = serviceRepository.save(service);
+
+        activityLogService.log("STATUS_CHANGED", "Service", service.getId());
+
         return mapper.toResponse(service);
     }
 
@@ -124,6 +138,9 @@ public class SchedulingService {
         newService.setIsActive(originalService.getIsActive());
 
         newService = serviceRepository.save(newService);
+
+        activityLogService.log("ENTITY_CREATED", "Service", newService.getId());
+
         return mapper.toResponse(newService);
     }
 

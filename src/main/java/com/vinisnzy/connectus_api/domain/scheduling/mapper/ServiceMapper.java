@@ -25,6 +25,7 @@ public interface ServiceMapper {
     void updateEntity(UpdateServiceRequest request, @MappingTarget Service service);
 
     @Mapping(target = "duration", source = "durationMinutes")
+    @Mapping(target = "isActive", source = "isActive")
     ServiceResponse toResponse(Service service);
 
     default Company mapCompany(java.util.UUID companyId) {

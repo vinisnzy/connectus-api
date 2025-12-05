@@ -10,9 +10,6 @@ import java.util.UUID;
 
 @Builder
 public record CreateServiceRequest(
-        @NotNull(message = "ID da empresa é obrigatório")
-        UUID companyId,
-
         @NotBlank(message = "Nome do serviço é obrigatório")
         String name,
 

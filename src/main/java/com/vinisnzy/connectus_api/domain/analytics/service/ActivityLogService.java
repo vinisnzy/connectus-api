@@ -7,7 +7,7 @@ import com.vinisnzy.connectus_api.domain.analytics.repository.ActivityLogReposit
 import com.vinisnzy.connectus_api.infra.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +37,23 @@ public class ActivityLogService {
         repository.save(log);
     }
 
-    public List<ActivityLogResponse> getLogsByCompany(UUID companyId, int page, int size) {
-        Page<ActivityLog> logs = repository.findByCompanyIdOrderByCreatedAt(companyId, PageRequest.of(page, size));
+    @Async
+    public void log(String action, String entityType, Integer entityId) {
+        UUID userId = SecurityUtils.getCurrentUserIdOrThrow();
+        UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
+
+        ActivityLog log = new ActivityLog();
+
+        log.setCompanyId(companyId);
+        log.setUserId(userId);
+        log.setAction(action);
+        log.setEntityType(entityType);
+
+        repository.save(log);
+    }
+
+    public List<ActivityLogResponse> getLogsByCompany(UUID companyId, Pageable pageable) {
+        Page<ActivityLog> logs = repository.findByCompanyIdOrderByCreatedAt(companyId, pageable);
         return logs.getContent()
                 .stream()
                 .map(mapper::toResponse)

@@ -9,6 +9,7 @@ import com.vinisnzy.connectus_api.domain.automation.entity.WhatsAppConnection;
 import com.vinisnzy.connectus_api.domain.automation.mapper.WhatsAppConnectionMapper;
 import com.vinisnzy.connectus_api.domain.automation.repository.WhatsAppConnectionRepository;
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
 import com.vinisnzy.connectus_api.infra.client.N8nClient;
@@ -26,6 +27,7 @@ public class WhatsAppConnectionService {
 
     private final WhatsAppConnectionRepository whatsAppConnectionRepository;
     private final CompanyRepository companyRepository;
+    private final ActivityLogService activityLogService;
 
     private final WhatsAppConnectionMapper mapper;
 
@@ -39,6 +41,9 @@ public class WhatsAppConnectionService {
                 .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrada com o id: " + companyId));
         WhatsAppConnection whatsAppConnection = mapper.toEntity(request, company);
         whatsAppConnectionRepository.save(whatsAppConnection);
+
+        activityLogService.log("ENTITY_CREATED", "WhatsAppConnection", whatsAppConnection.getId());
+
         return mapper.toResponse(whatsAppConnection);
     }
 
@@ -61,10 +66,15 @@ public class WhatsAppConnectionService {
                 .orElseThrow(() -> new EntityNotFoundException("Conexão WhatsApp não encontrada com id: " + request.id()));
         whatsAppConnection.setDisplayName(request.connectionName());
         whatsAppConnectionRepository.save(whatsAppConnection);
+
+        activityLogService.log("ENTITY_UPDATED", "WhatsAppConnection", whatsAppConnection.getId());
+
         return mapper.toResponse(whatsAppConnection);
     }
 
     public void delete(UUID id) {
+        activityLogService.log("ENTITY_DELETED", "WhatsAppConnection", id);
+
         whatsAppConnectionRepository.deleteById(id);
     }
 

@@ -1,6 +1,7 @@
 package com.vinisnzy.connectus_api.domain.messaging.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
 import com.vinisnzy.connectus_api.domain.messaging.dto.request.CreateTicketTagRequest;
@@ -24,6 +25,7 @@ public class TicketTagService {
 
     private final TicketTagRepository ticketTagRepository;
     private final CompanyRepository companyRepository;
+    private final ActivityLogService activityLogService;
     private final TicketTagMapper mapper;
 
     public List<TicketTagResponse> findAll() {
@@ -71,6 +73,9 @@ public class TicketTagService {
         ticketTag.setCompany(company);
 
         ticketTag = ticketTagRepository.save(ticketTag);
+
+        activityLogService.log("ENTITY_CREATED", "TicketTag", ticketTag.getId());
+
         return mapper.toResponse(ticketTag);
     }
 
@@ -87,12 +92,18 @@ public class TicketTagService {
 
         mapper.updateEntity(request, ticketTag);
         ticketTag = ticketTagRepository.save(ticketTag);
+
+        activityLogService.log("ENTITY_UPDATED", "TicketTag", ticketTag.getId());
+
         return mapper.toResponse(ticketTag);
     }
 
     @Transactional
     public void delete(Integer id) {
         TicketTag ticketTag = getTicketTagOrThrow(id);
+
+        activityLogService.log("ENTITY_DELETED", "TicketTag", id);
+
         ticketTagRepository.deleteById(ticketTag.getId());
     }
 

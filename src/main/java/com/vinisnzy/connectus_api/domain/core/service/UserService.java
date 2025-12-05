@@ -1,6 +1,7 @@
 package com.vinisnzy.connectus_api.domain.core.service;
 
 import com.vinisnzy.connectus_api.api.exception.EntityNotFoundException;
+import com.vinisnzy.connectus_api.domain.analytics.service.ActivityLogService;
 import com.vinisnzy.connectus_api.domain.core.dto.request.UpdateUserRequest;
 import com.vinisnzy.connectus_api.domain.core.dto.response.UserResponse;
 import com.vinisnzy.connectus_api.domain.core.entity.Role;
@@ -15,6 +16,7 @@ import com.vinisnzy.connectus_api.infra.utils.PasswordUtils;
 import com.vinisnzy.connectus_api.infra.utils.SecurityUtils;
 import com.vinisnzy.connectus_api.shared.enums.Strength;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,8 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -34,6 +38,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordUtils passwordUtils;
+    private final ActivityLogService activityLogService;
 
     private final UserMapper mapper;
 
@@ -77,13 +82,18 @@ public class UserService {
             throw new IllegalStateException("Usuário não pertence à empresa atual");
         }
 
-        if (userRepository.existsByEmail(updatedUser.email())) {
-            throw new IllegalStateException("Email já está em uso por outro usuário");
+        if (!Objects.equals(user.getEmail(), updatedUser.email())) {
+            if (userRepository.existsByEmail(updatedUser.email())) {
+                throw new IllegalStateException("Email já está em uso por outro usuário");
+            }
         }
 
         mapper.updateEntity(updatedUser, user);
 
         user = userRepository.save(user);
+
+        activityLogService.log("ENTITY_UPDATED", "User", user.getId());
+
         return mapper.toResponse(user);
     }
 
@@ -101,20 +111,26 @@ public class UserService {
         // TODO: Reassign user's tickets, contacts, etc. to another user
         // TODO: Implement soft delete or anonymize data based on business rules
 
+        activityLogService.log("ENTITY_DELETED", "User", id);
+
         userRepository.deleteById(id);
     }
 
     @Transactional
-    public User toggleActive(UUID id, boolean isActive) {
+    public UserResponse toggleActive(UUID id, boolean isActive) {
         User user = getUserByIdOrThrow(id);
 
         validateUserCompany(user);
-        validateMasterUser(user);
+        validateMasterUser(user, id);
         // TODO: Close active sessions if deactivating
         // TODO: Send notification
 
         user.setIsActive(isActive);
-        return userRepository.save(user);
+        user = userRepository.save(user);
+
+        activityLogService.log("STATUS_CHANGED", "User", user.getId());
+
+        return mapper.toResponse(user);
     }
 
     @Transactional
@@ -168,13 +184,15 @@ public class UserService {
         User user = getUserByIdOrThrow(id);
 
         validateUserCompany(user);
-        validateMasterUser(user);
+        validateMasterUser(user, id);
 
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new EntityNotFoundException("Função não encontrada com o id: " + roleId));
 
-        if (!role.getCompany().getId().equals(user.getCompany().getId())) {
-            throw new IllegalStateException("A função não pertence à mesma empresa do usuário");
+        if (role.getIsSystemRole() == false) {
+            if (!role.getCompany().getId().equals(user.getCompany().getId())) {
+                throw new IllegalStateException("A função não pertence à mesma empresa do usuário");
+            }
         }
 
         // TODO: Check permissions for role assignment
@@ -182,11 +200,14 @@ public class UserService {
         user.setRole(role);
 
         user = userRepository.save(user);
+
+        activityLogService.log("PERMISSIONS_CHANGED", "User", user.getId());
+
         return mapper.toResponse(user);
     }
 
     @Transactional
-    public User updateStatus(UUID id, UserStatus status) {
+    public UserResponse updateStatus(UUID id, UserStatus status) {
         User user = getUserByIdOrThrow(id);
 
         user.setStatus(status);
@@ -195,7 +216,11 @@ public class UserService {
             user.setLastSeenAt(ZonedDateTime.now());
         }
 
-        return userRepository.save(user);
+        user = userRepository.save(user);
+
+        activityLogService.log("STATUS_CHANGED", "User", user.getId());
+
+        return mapper.toResponse(user);
     }
 
     @Transactional
@@ -235,8 +260,9 @@ public class UserService {
         }
     }
 
-    private void validateMasterUser(User user) {
-        if (Boolean.TRUE.equals(user.getIsMaster())) {
+    private void validateMasterUser(User user, UUID currentUserId) {
+        log.info(user.getId().toString());
+        if (Boolean.TRUE.equals(user.getIsMaster()) && user.getId() != currentUserId) {
             throw new IllegalStateException("Não é possível editar um usuário master");
         }
     }
