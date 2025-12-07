@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
     Optional<Company> findByCnpj(String cnpj);
     Boolean existsByCnpj(String cnpj);
+    Optional<Company> findByEmail(String email);
+    Boolean existsByEmail(String email);
 }

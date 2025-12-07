@@ -31,6 +31,9 @@ public class Company {
     @Column(unique = true, length = 20)
     private String cnpj;
 
+    @Column(nullable = false, unique = true, length = 100)
+    private String email;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false, columnDefinition = "jsonb", insertable = false)
     private Map<String, Object> settings;

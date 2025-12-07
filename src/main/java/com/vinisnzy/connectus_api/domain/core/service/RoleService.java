@@ -15,7 +15,6 @@ import com.vinisnzy.connectus_api.domain.core.repository.UserRepository;
 import com.vinisnzy.connectus_api.infra.utils.JsonUtils;
 import com.vinisnzy.connectus_api.infra.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +63,7 @@ public class RoleService {
     public RoleResponse create(CreateRoleRequest request) {
         UUID companyId = SecurityUtils.getCurrentCompanyIdOrThrow();
 
-        if (roleRepository.existsByNameAndCompanyId(request.name(), companyId)) {
+        if (Boolean.TRUE.equals(roleRepository.existsByNameAndCompanyId(request.name(), companyId))) {
             throw new IllegalArgumentException("O nome do cargo já existe na empresa.");
         }
 
@@ -91,7 +90,7 @@ public class RoleService {
 
         validateRoleByCurrentCompany(role);
 
-        if (roleRepository.existsByNameAndCompanyId(updatedRole.name(), role.getCompany().getId())
+        if (Boolean.TRUE.equals(roleRepository.existsByNameAndCompanyId(updatedRole.name(), role.getCompany().getId()))
                 && !role.getName().equals(updatedRole.name())) {
             throw new IllegalArgumentException("O nome do cargo já existe na empresa.");
         }
@@ -158,7 +157,7 @@ public class RoleService {
 
         Role originalRole = getRoleByIdOrThrow(id);
 
-        if (roleRepository.existsByNameAndCompanyId(newName, companyId)) {
+        if (Boolean.TRUE.equals(roleRepository.existsByNameAndCompanyId(newName, companyId))) {
             throw new IllegalArgumentException("O nome do cargo já existe na empresa.");
         }
 

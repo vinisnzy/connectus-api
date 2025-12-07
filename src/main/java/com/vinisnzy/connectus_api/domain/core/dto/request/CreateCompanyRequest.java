@@ -1,5 +1,6 @@
 package com.vinisnzy.connectus_api.domain.core.dto.request;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
@@ -10,6 +11,10 @@ public record CreateCompanyRequest(
         String name,
 
         @NotBlank(message = "CNPJ é obrigatório")
-        String cnpj
+        String cnpj,
+
+        @NotBlank(message = "Email é obrigatório")
+        @Email(message = "Email inválido")
+        String email
 ) {
 }

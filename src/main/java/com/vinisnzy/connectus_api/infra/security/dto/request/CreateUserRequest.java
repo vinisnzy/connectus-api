@@ -2,8 +2,6 @@ package com.vinisnzy.connectus_api.infra.security.dto.request;
 
 import jakarta.validation.constraints.*;
 
-import java.util.UUID;
-
 public record CreateUserRequest(
 
         @NotNull(message = "ID da função é obrigatório.")

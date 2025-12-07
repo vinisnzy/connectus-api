@@ -8,6 +8,7 @@ import java.util.Map;
 public record UpdateCompanyRequest(
         String name,
         String cnpj,
+        String email,
         Map<String, Object> settings
 ) {
 }
