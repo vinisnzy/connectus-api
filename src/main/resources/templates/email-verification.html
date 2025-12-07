@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verificação de E-mail</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f5f6fa; font-family:Arial, sans-serif;">
+
+<!-- Container externo -->
+<table role="presentation"
+       style="width:100%; border-spacing:0; background-color:#f5f6fa; padding:30px 0;">
+    <tr>
+        <td style="text-align:center;">
+
+            <!-- Card central -->
+            <table role="presentation"
+                   style="
+                       border-spacing:0;
+                       background-color:#ffffff;
+                       border-radius:8px;
+                       overflow:hidden;
+                       max-width:600px;
+                       width:100%;
+                       display:block;
+                   ">
+
+                <!-- Header -->
+                <tr>
+                    <td style="
+                        background-color:#4a6cf7;
+                        padding:20px;
+                        text-align:center;
+                    ">
+                        <h1 style="color:#ffffff; margin:0; font-size:24px; font-weight:600;">
+                            ConnectusCRM
+                        </h1>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="
+                        padding:30px;
+                        color:#333333;
+                        font-size:16px;
+                        line-height:1.5;
+                        display:block;
+                        text-align:left;
+                    ">
+                        <p>
+                            Olá, <strong th:text="${name}">Usuário</strong>
+                        </p>
+
+                        <p>
+                            Obrigado por criar uma conta no <strong>ConnectusCRM</strong>.
+                            Para concluir seu cadastro, confirme seu endereço de e-mail clicando no botão abaixo.
+                        </p>
+
+                        <!-- Botão -->
+                        <div style="text-align:center; margin:35px 0;">
+                            <a th:href="${verificationLink}"
+                               style="
+                                   background-color:#4a6cf7;
+                                   color:#ffffff;
+                                   padding:14px 28px;
+                                   text-decoration:none;
+                                   border-radius:6px;
+                                   font-size:16px;
+                                   font-weight:bold;
+                                   display:inline-block;
+                                   cursor:pointer;
+                               ">
+                                Verificar E-mail
+                            </a>
+                        </div>
+
+                        <p>
+                            Se você não criou uma conta, apenas ignore esta mensagem.
+                        </p>
+
+                        <p style="margin-top:30px; color:#777777; font-size:14px;">
+                            Atenciosamente,<br />
+                            Equipe ConnectusCRM
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="
+                        background-color:#f0f0f0;
+                        padding:15px;
+                        text-align:center;
+                        color:#555555;
+                        font-size:12px;
+                    ">
+                        Esta é uma mensagem automática. Por favor, não responda este e-mail.
+                        <br/>
+                        © ConnectusCRM - Todos os direitos reservados.
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

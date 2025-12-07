@@ -8,10 +8,10 @@ import com.vinisnzy.connectus_api.domain.core.entity.Role;
 import com.vinisnzy.connectus_api.domain.core.entity.User;
 import com.vinisnzy.connectus_api.domain.core.entity.enums.UserStatus;
 import com.vinisnzy.connectus_api.domain.core.mapper.UserMapper;
-import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
 import com.vinisnzy.connectus_api.domain.core.repository.RoleRepository;
 import com.vinisnzy.connectus_api.domain.core.repository.UserRepository;
 import com.vinisnzy.connectus_api.domain.core.specifications.UserSpecification;
+import com.vinisnzy.connectus_api.infra.email.EmailService;
 import com.vinisnzy.connectus_api.infra.utils.PasswordUtils;
 import com.vinisnzy.connectus_api.infra.utils.SecurityUtils;
 import com.vinisnzy.connectus_api.shared.enums.Strength;
@@ -34,11 +34,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CompanyRepository companyRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordUtils passwordUtils;
     private final ActivityLogService activityLogService;
+    private final EmailService emailService;
 
     private final UserMapper mapper;
 
@@ -82,11 +82,9 @@ public class UserService {
             throw new IllegalStateException("Usuário não pertence à empresa atual");
         }
 
-        if (!Objects.equals(user.getEmail(), updatedUser.email())) {
-            if (userRepository.existsByEmail(updatedUser.email())) {
+        if (!user.getEmail().equals(updatedUser.email()) && userRepository.existsByEmail(updatedUser.email())) {
                 throw new IllegalStateException("Email já está em uso por outro usuário");
             }
-        }
 
         mapper.updateEntity(updatedUser, user);
 
@@ -160,7 +158,8 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o email: " + email));
 
         String token = passwordUtils.generateToken(user.getId());
-        // TODO: Send password reset email
+        // TODO: Criar lógica para resetar a senha e inserir o token no link
+        emailService.sendResetPasswordEmail(email, user.getName(), "resetLink");
     }
 
     @Transactional
@@ -189,10 +188,8 @@ public class UserService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new EntityNotFoundException("Função não encontrada com o id: " + roleId));
 
-        if (role.getIsSystemRole() == false) {
-            if (!role.getCompany().getId().equals(user.getCompany().getId())) {
-                throw new IllegalStateException("A função não pertence à mesma empresa do usuário");
-            }
+        if (Boolean.FALSE.equals(role.getIsSystemRole()) && !role.getCompany().getId().equals(user.getCompany().getId())) {
+            throw new IllegalStateException("A função não pertence à mesma empresa do usuário");
         }
 
         // TODO: Check permissions for role assignment

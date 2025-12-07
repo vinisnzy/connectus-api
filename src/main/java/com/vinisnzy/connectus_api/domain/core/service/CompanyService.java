@@ -8,6 +8,7 @@ import com.vinisnzy.connectus_api.domain.core.dto.response.CompanyResponse;
 import com.vinisnzy.connectus_api.domain.core.entity.Company;
 import com.vinisnzy.connectus_api.domain.core.mapper.CompanyMapper;
 import com.vinisnzy.connectus_api.domain.core.repository.CompanyRepository;
+import com.vinisnzy.connectus_api.infra.email.EmailService;
 import com.vinisnzy.connectus_api.infra.utils.JsonUtils;
 import com.vinisnzy.connectus_api.infra.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class CompanyService {
 
     private final CompanyRepository companyRepository;
     private final ActivityLogService activityLogService;
+    private final EmailService emailService;
     private final CompanyMapper mapper;
 
     public CompanyResponse findById(UUID id) {
@@ -42,6 +44,12 @@ public class CompanyService {
         return mapper.toResponse(company);
     }
 
+    public CompanyResponse findByEmail(String email) {
+        Company company = companyRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrada com o email: " + email));
+        return mapper.toResponse(company);
+    }
+
     @Transactional
     public Company create(CreateCompanyRequest request) {
         validateCnpj(request.cnpj());
@@ -49,13 +57,17 @@ public class CompanyService {
             throw new IllegalArgumentException("Esse cnpj já está sendo utilizado");
         }
 
-        Company company = new Company();
-        company.setCnpj(request.cnpj());
-        company.setName(request.name());
+        if (Boolean.TRUE.equals(companyRepository.existsByEmail(request.email()))) {
+            throw new IllegalArgumentException("Esse email já está sendo utilizado");
+        }
 
-        // TODO: Send verification email
+        Company company = mapper.toEntity(request);
 
         company = companyRepository.save(company);
+
+        if (company.getEmail() != null && !company.getEmail().isBlank()) {
+            emailService.sendVerificationEmail(company.getEmail(), company.getName(), "verificationLink");
+        }
 
         activityLogService.log("ENTITY_CREATED", "Company", company.getId());
 
@@ -66,9 +78,16 @@ public class CompanyService {
     public Company update(UUID id, UpdateCompanyRequest updatedCompany) {
         Company company = findEntityById(id);
 
-        validateCnpj(updatedCompany.cnpj());
-        if (Boolean.TRUE.equals(companyRepository.existsByCnpj(updatedCompany.cnpj()))) {
-            throw new IllegalArgumentException("Esse cnpj já está sendo utilizado");
+        if (updatedCompany.cnpj() != null && !updatedCompany.cnpj().equals(company.getCnpj())) {
+            validateCnpj(updatedCompany.cnpj());
+            if (Boolean.TRUE.equals(companyRepository.existsByCnpj(updatedCompany.cnpj()))) {
+                throw new IllegalArgumentException("Esse cnpj já está sendo utilizado");
+            }
+        }
+
+        String newEmail = updatedCompany.email();
+        if (newEmail != null && !newEmail.equals(company.getEmail()) && Boolean.TRUE.equals(companyRepository.existsByEmail(newEmail))) {
+            throw new IllegalArgumentException("Esse email já está sendo utilizado");
         }
 
         mapper.updateEntity(updatedCompany, company);
